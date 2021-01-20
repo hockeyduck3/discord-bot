@@ -9,18 +9,25 @@ const fs = require('fs');
 const functions = fs.readdirSync('./functions').filter(file => file.endsWith('.js'));
 
 for (const file of functions) {
-    const command = require(`./functions/${file}`);
+	const command = require(`./functions/${file}`);
+	
+	if (typeof command.name === 'object') {
+		command.name.forEach(name => {
+			bot.commands.set(name, command);
+		});
+	} else {
+		bot.commands.set(command.name, command);
+	}
 
-    bot.commands.set(command.name, command);
 }
 
-const prefix = '!util';
-
 bot.once('ready', () => {
-    console.log('Online');
+	console.log('Online');
 });
 
 bot.login(process.env.token);
+
+const prefix = '!util';
 
 bot.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
