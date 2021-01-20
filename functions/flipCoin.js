@@ -1,5 +1,5 @@
 module.exports = {
-    name: ['flip', 'flip a coin'],
+    name: 'flip',
     description: 'Flip a coin',
     execute(message) {
         const num = Math.floor(Math.random() * 5);

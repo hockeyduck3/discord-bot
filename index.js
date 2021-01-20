@@ -27,17 +27,18 @@ bot.once('ready', () => {
 
 bot.login(process.env.token);
 
-const prefix = '!util';
+const prefix = '#';
 
 bot.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-    const command = message.content.slice(prefix.length).toLowerCase().replace(/[^a-zA-Z ]/g, "").trim();
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const command = args.shift().toLowerCase();
 
 	if (!bot.commands.has(command)) return;
 
 	try {
-		bot.commands.get(command).execute(message);
+		bot.commands.get(command).execute(message, args);
 	} catch (error) {
 		console.error(error);
 		message.reply('There was an error trying to execute that command!');
