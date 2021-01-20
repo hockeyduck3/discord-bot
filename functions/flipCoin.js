@@ -18,7 +18,7 @@ module.exports = {
             'Guess what? It\'s',
             'I gotchu fam! It\'s',
             'The coin has spoken! It\'s',
-            'The coin has decided! It has chosen',
+            'The coin has decided! It\'s',
             'I heard you like to flip coins? Well the coin I just flipped came up as',
             'So I flipped the coin and got'
         ];
