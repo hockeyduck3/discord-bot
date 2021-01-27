@@ -41,5 +41,7 @@ module.exports = {
         const numStr = numArr.toString().replace(/,/g, ' ');
 
         const result = eval(numStr);
+
+        message.reply(`The answer to your math problem is ${result}`);
     }
 }
