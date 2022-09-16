@@ -8,7 +8,8 @@ module.exports = {
             method: 'get',
             url: 'https://icanhazdadjoke.com/',
             headers: {
-                accept: 'application/json'
+                accept: 'application/json',
+                'User-Agent': 'axios 0.21.1'
             }
         }).then(response => {
             message.reply(response.data.joke);
