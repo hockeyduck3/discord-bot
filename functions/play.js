@@ -1,5 +1,6 @@
 const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
+const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: ['play','p'],
@@ -49,7 +50,17 @@ module.exports = {
                     vc.leave();
                 });
 
-            await message.reply(`Now playing ***${video.title}***`);
+                const videoEmbed = new MessageEmbed()
+                    .setColor([255, 0, 255])
+                    .addFields(
+                        { name: `Playing ${video.title}`, value: `${video.url}` },
+                        { name:'\u200B', value: '\u200B' },
+                    )
+                    .setThumbnail(video.image)
+                    .setTimestamp()
+                    .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
+
+            await message.channel.send(videoEmbed);
         } else {
             message.reply(`I couldn't find a video for that fam`);
             return;
