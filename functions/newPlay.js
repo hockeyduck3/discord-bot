@@ -5,38 +5,40 @@ const { MessageEmbed } = require('discord.js');
 const queue = new Map();
 
 module.exports = {
-    name: ['play2','p2', 'skip', 'stop'],
+    name: ['no'],
     description: 'Music bot V2',
-    cooldown: 0,
     async execute(message, args) {
-        let command = message.content.substring(1).match(/play|p|skip|stop/g);
+        let command = message.content.substring(1).trim().split(/ +/).shift();
+        command = command.replace(/[0-9]/g, '');
+
         const vc = message.member.voice.channel;
 
-        // if (!vc) {
-        //     message.reply('You gotta be in a voice channel bro');
-        //     return;
-        // }
+        if (!vc) {
+            message.reply('You gotta be in a voice channel bro');
+            return;
+        }
 
         const perms = vc.permissionsFor(message.client.user);
 
-        // if (!perms.has('CONNECT')) {
-        //     message.reply('You\'re missing the CONNECT permission fool');
-        //     return;
-        // }
+        if (!perms.has('CONNECT')) {
+            message.reply('You\'re missing the CONNECT permission fool');
+            return;
+        }
 
-        // if (!perms.has('SPEAK')) {
-        //         message.reply('You\'re missing the SPEAK permission fool');
-        //         return;
-        // }
+        if (!perms.has('SPEAK')) {
+                message.reply('You\'re missing the SPEAK permission fool');
+                return;
+        }
 
         if (!args.length) {
             message.reply('You need to add another argument bro');
             return;
         }
-
-        let serverQueue = queue.get(vc);
+        
+        let serverQueue = queue.get(message.guild.id);
 
         if (command == 'play' || command == 'p') {
+
             if (!args.length) {
                 message.reply('You need to add another argument bro');
                 return;
@@ -71,46 +73,45 @@ module.exports = {
 
             if (!serverQueue) {
                 const queueConstruct = {
-                    voiceChannel: vc,
+                    voiceChannel: message.member.voice.channel,
                     textChannel: message.channel,
                     connection: null,
                     songs: []
                 }
     
-                queue.set(vc, queueConstruct);
+                queue.set(message.guild.id, queueConstruct);
                 queueConstruct.songs.push(song);
     
                 try {
                     const connection = await vc.join();
+                    // const leave = vc.leave();
                     queueConstruct.connection = connection;
-                    playSong(vc, queueConstruct.songs[0]);
+                    playSong(message.guild, queueConstruct.songs[0]);
                 } catch (err) {
-                    queue.delete(vc);
+                    queue.delete(message.guild.id);
                     message.channel.send('Looks like there was an error joining.');
                     console.log(err);
                 }
             } else {
                 serverQueue.songs.push(song);
-                console.log(serverQueue);
+                console.log(serverQueue.songs);
                 message.reply(`Added ${song.title} to the queue`);
             }
         }
     }
 }
 
-const playSong = async(channel, song) => {
-    const songQueue = queue.get(channel);
-
-    console.log(queue);
-
+const playSong = async(guild, song) => {
+    const songQueue = queue.get(guild.id);
+    
     if (!song) {
-        songQueue.vc.leave();
-        queue.delete(vc);
+        // leave;
+        queue.delete(guild.id);
         return;
     }
 
     const stream = ytdl(song.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
-        message.channel.send('Looks like there was an error');
+        songQueue.textChannel.send('Looks like there was an error');
         console.log(err);
     });
     

@@ -2,8 +2,10 @@ const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
 
+let songArray = [];
+
 module.exports = {
-    name: ['play','p'],
+    name: ['play', 'p'],
     description: 'play song in discord channel',
     async execute(message, args) {
         const vc = message.member.voice.channel;
