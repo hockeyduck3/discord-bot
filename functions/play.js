@@ -52,6 +52,7 @@ module.exports = {
 
                 const videoEmbed = new MessageEmbed()
                     .setColor([255, 0, 255])
+                    .setAuthor('Util Music')
                     .addFields(
                         { name: `Playing ${video.title}`, value: `${video.url}` },
                         { name:'\u200B', value: '\u200B' },
