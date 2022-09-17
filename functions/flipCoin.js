@@ -20,7 +20,11 @@ module.exports = {
             'The coin has spoken! It\'s',
             'The coin has decided! It\'s',
             'I heard you like to flip coins? Well the coin I just flipped came up as',
-            'So I flipped the coin and got'
+            'So I flipped the coin and got',
+            'WOOOOOOWWWWWW! GUESS WHAT??? It\'s',
+            'But did you know that it\'s',
+            'I believe that it\'s',
+            'I\'M SOOOO SORRY! It\'s'
         ];
 
         message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]} ${result}.`);
