@@ -9,8 +9,19 @@ module.exports = {
             return;
         }
 
+        const answerArr = [
+            'https://media.giphy.com/media/KB59SOANzxlaU/giphy.gif',
+            'https://media.giphy.com/media/MmuJfAxgysL5LajJMj/giphy.gif',
+            'https://tenor.com/bbPdG.gif',
+            'Fine, have it your way. 🙂',
+            `*sniff* you're soooo meannnn! But I guess I'll go 😿`,
+            `Oh WOWWWWWW. I see how it is. 😠`,
+            'https://tenor.com/blRIR.gif',
+            'https://tenor.com/bFH99.gif'
+        ];
+
         await vc.leave();
-        await message.reply('FINE I\'LL LEAVE');
+        await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
         return;
     }
 }
