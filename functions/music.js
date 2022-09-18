@@ -2,16 +2,20 @@ const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
 
+// Global Vars
 let songArray = [];
 let songPlaying = false;
 let connection;
+let previousSongs = [];
+let currentSong;
 
 module.exports = {
-    name: ['play', 'p', 'skip', 'stop', 'leave'],
+    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev'],
     description: 'play song in discord channel',
     async execute(message, args) {
+        // Local Vars
         const vc = message.member.voice.channel;
-        const command = message.content.substring(1).trim().split(/ +/).shift();
+        const command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
 
         if (!vc) {
             message.reply('You gotta be in a voice channel bro');
@@ -30,6 +34,7 @@ module.exports = {
                 return;
         }
 
+        // Everything for the play command
         if (command == 'play' || command == 'p') {
             if (!args.length) {
                 message.reply('You need to add another argument bro');
@@ -64,6 +69,8 @@ module.exports = {
             }
 
             const playSong = async(song) => {
+                currentSong = song;
+
                 const stream = ytdl(song.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
                     console.log(err);
                     vc.leave();
@@ -100,6 +107,8 @@ module.exports = {
             }
         }
 
+
+        // Everything for the skip command
         if (command == 'skip') {
             if (!vc) {
                 message.reply('You gotta be in a voice channel bro');
@@ -107,22 +116,28 @@ module.exports = {
             } else if (songArray == 0) {
                 message.channel.send('There are no other songs to skip');
             } else {
+                previousSongs.unshift(currentSong);
                 connection.dispatcher.end();
             }
         }
 
+
+        // Everything for the stop command
         if (command == 'stop') {
             if (!vc) {
                 message.reply('You gotta be in a voice channel bro');
                 return;
             } else {
                 songArray = [];
+                previousSongs = [];
                 connection.dispatcher.end();
                 songPlaying = false;
                 return;
             }
         }
 
+
+        //Everything for the leave command
         if (command == 'leave') {
             if (!vc) {
                 message.reply('You gotta be in a voice channel to make me leave fool');
@@ -141,11 +156,29 @@ module.exports = {
             ];
     
             songArray = [];
+            previousSongs = [];
             connection.dispatcher.end();
             songPlaying = false;
 
             await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
             return;
+        }
+
+        // Everything for the previous song command
+        if (command == 'previous' || command == 'prev') {
+            if (!vc) {
+                message.reply('You gotta be in a voice channel to make me leave fool');
+                return;
+            }
+
+            if (previousSongs[0] != currentSong) {
+                songArray.unshift(previousSongs[0]);
+                songArray.push(currentSong);
+
+                connection.dispatcher.end();
+            } else {
+                message.channel.send('There are no previous songs');
+            }
         }
     }
 }
