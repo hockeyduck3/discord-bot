@@ -51,7 +51,15 @@ module.exports = {
                 songPlaying = true;
             } else {
                 songArray.push(video);
-                message.channel.send(`Added ${video.title} to the queue`);
+
+                const queueEmbed = new MessageEmbed()
+                    .setColor([2, 150, 255])
+                    .setAuthor(`Added ${video.title} to the queue 👍`)
+                    .setThumbnail(video.image)
+                    .setTimestamp()
+                    .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
+
+                message.channel.send(queueEmbed);
                 return;
             }
 
@@ -67,7 +75,6 @@ module.exports = {
                         } else {
                             playSong(songArray[0]);
                             songArray.shift();
-                            console.log(songArray == 0);
                         }
                     });
         
