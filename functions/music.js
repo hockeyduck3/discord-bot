@@ -157,7 +157,7 @@ module.exports = {
     
             songArray = [];
             previousSongs = [];
-            connection.dispatcher.end();
+            vc.leave();
             songPlaying = false;
 
             await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
@@ -171,11 +171,13 @@ module.exports = {
                 return;
             }
 
-            if (previousSongs[0] != currentSong) {
+            if (previousSongs[0] != currentSong && previousSongs.length != 0) {
+                songArray.unshift(currentSong);
                 songArray.unshift(previousSongs[0]);
-                songArray.push(currentSong);
 
                 connection.dispatcher.end();
+
+                previousSongs.shift();
             } else {
                 message.channel.send('There are no previous songs');
             }
