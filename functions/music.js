@@ -78,6 +78,9 @@ module.exports = {
                 connection.play(stream, {seek: 0, volume: 1})
                     .on('finish', () =>{
                         if(songArray.length == 0) {
+                            songPlaying = false;
+                            previousSongs = [];
+                            songArray = [];
                             vc.leave();
                         } else {
                             playSong(songArray[0]);
@@ -87,14 +90,13 @@ module.exports = {
         
                     const nowPlaying = new MessageEmbed()
                         .setColor([255, 0, 255])
-                        .setAuthor('Util Music')
+                        .setAuthor('Tilly Music Player')
                         .addFields(
                             { name: `Playing ${song.title}`, value: `${song.url}` },
                             { name:'\u200B', value: '\u200B' },
                         )
                         .setThumbnail(song.image)
                         .setTimestamp()
-                        .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
             
                 await message.channel.send(nowPlaying);
             }
@@ -122,46 +124,35 @@ module.exports = {
         }
 
 
-        // Everything for the stop command
-        if (command == 'stop') {
+        // Everything for the stop / leave command
+        if (command == 'stop' || command == 'leave') {
             if (!vc) {
                 message.reply('You gotta be in a voice channel bro');
                 return;
             } else {
+
+                const answerArr = [
+                    'https://media.giphy.com/media/KB59SOANzxlaU/giphy.gif',
+                    'https://media.giphy.com/media/MmuJfAxgysL5LajJMj/giphy.gif',
+                    'https://tenor.com/bbPdG.gif',
+                    'Fine, have it your way. 🙂',
+                    `*sniff* you're soooo meannnn! But I guess I'll go 😿`,
+                    `Oh WOWWWWWW. I see how it is. 😠`,
+                    'https://tenor.com/blRIR.gif',
+                    'https://tenor.com/bFH99.gif'
+                ];
+
                 songArray = [];
                 previousSongs = [];
-                connection.dispatcher.end();
-                songPlaying = false;
+                if (!songPlaying) {
+                    message.reply(`I'm not even in the voice channel fool`);
+                } else {
+                    connection.dispatcher.end();
+                    songPlaying = false;
+                    await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
+                }
                 return;
             }
-        }
-
-
-        //Everything for the leave command
-        if (command == 'leave') {
-            if (!vc) {
-                message.reply('You gotta be in a voice channel to make me leave fool');
-                return;
-            }
-    
-            const answerArr = [
-                'https://media.giphy.com/media/KB59SOANzxlaU/giphy.gif',
-                'https://media.giphy.com/media/MmuJfAxgysL5LajJMj/giphy.gif',
-                'https://tenor.com/bbPdG.gif',
-                'Fine, have it your way. 🙂',
-                `*sniff* you're soooo meannnn! But I guess I'll go 😿`,
-                `Oh WOWWWWWW. I see how it is. 😠`,
-                'https://tenor.com/blRIR.gif',
-                'https://tenor.com/bFH99.gif'
-            ];
-    
-            songArray = [];
-            previousSongs = [];
-            vc.leave();
-            songPlaying = false;
-
-            await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
-            return;
         }
 
         // Everything for the previous song command
