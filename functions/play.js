@@ -3,6 +3,7 @@ const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
 
 let songArray = [];
+let songPlaying = false;
 
 module.exports = {
     name: ['play', 'p'],
@@ -32,7 +33,7 @@ module.exports = {
             return;
         }
 
-        const connection = await vc.join();
+        let incomingVideo = args.join(' ');
 
         const findVideo = async (query) => {
             const result = await ytsearch(query);
@@ -40,34 +41,54 @@ module.exports = {
             return (result.videos.length > 1) ? result.videos[0] : null;
         }
 
-        const video = await findVideo(args.join(' '));
+        const video = await findVideo(incomingVideo);
 
-        if (video) {
-            const stream = ytdl(video.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
+        if (!songPlaying) {
+            var connection = await vc.join();
+            songPlaying = true;
+        } else {
+            songArray.push(video);
+            console.log(`songPlaying = ${songPlaying}`);
+            console.log(`songArray = ${songArray}`);
+            message.channel.send(`Added ${video.title} to the queue`);
+            return;
+        }
+
+        const playSong = async(song) => {
+            const stream = ytdl(song.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
                 console.log(err);
                 vc.leave();
             });
             connection.play(stream, {seek: 0, volume: 1})
                 .on('finish', () =>{
-                    vc.leave();
+                    if(songArray.length == 0) {
+                        vc.leave();
+                    } else {
+                        playSong(songArray[0]);
+                        songArray.shift();
+                        console.log(songArray == 0);
+                    }
                 });
-
-                const videoEmbed = new MessageEmbed()
+    
+                const nowPlaying = new MessageEmbed()
                     .setColor([255, 0, 255])
                     .setAuthor('Util Music')
                     .addFields(
-                        { name: `Playing ${video.title}`, value: `${video.url}` },
+                        { name: `Playing ${song.title}`, value: `${song.url}` },
                         { name:'\u200B', value: '\u200B' },
                     )
-                    .setThumbnail(video.image)
+                    .setThumbnail(song.image)
                     .setTimestamp()
                     .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
+        
+            await message.channel.send(nowPlaying);
+        }
 
-            await message.channel.send(videoEmbed);
+        if (video) {
+            playSong(video);
         } else {
             message.reply(`I couldn't find a video for that fam`);
             return;
         }
-
     }
 }
