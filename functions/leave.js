@@ -1,5 +1,5 @@
 module.exports = {
-    name: 'leave',
+    name: 'oof',
     description: 'Get\'s util to leave the voice channel',
     async execute(message, args) {
         const vc = message.member.voice.channel;

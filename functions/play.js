@@ -7,7 +7,7 @@ let songPlaying = false;
 let connection;
 
 module.exports = {
-    name: ['play', 'p', 'skip'],
+    name: ['play', 'p', 'skip', 'stop', 'leave'],
     description: 'play song in discord channel',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -51,8 +51,6 @@ module.exports = {
                 songPlaying = true;
             } else {
                 songArray.push(video);
-                console.log(`songPlaying = ${songPlaying}`);
-                console.log(`songArray = ${songArray}`);
                 message.channel.send(`Added ${video.title} to the queue`);
                 return;
             }
@@ -104,6 +102,43 @@ module.exports = {
             } else {
                 connection.dispatcher.end();
             }
+        }
+
+        if (command == 'stop') {
+            if (!vc) {
+                message.reply('You gotta be in a voice channel bro');
+                return;
+            } else {
+                songArray = [];
+                connection.dispatcher.end();
+                songPlaying = false;
+                return;
+            }
+        }
+
+        if (command == 'leave') {
+            if (!vc) {
+                message.reply('You gotta be in a voice channel to make me leave fool');
+                return;
+            }
+    
+            const answerArr = [
+                'https://media.giphy.com/media/KB59SOANzxlaU/giphy.gif',
+                'https://media.giphy.com/media/MmuJfAxgysL5LajJMj/giphy.gif',
+                'https://tenor.com/bbPdG.gif',
+                'Fine, have it your way. 🙂',
+                `*sniff* you're soooo meannnn! But I guess I'll go 😿`,
+                `Oh WOWWWWWW. I see how it is. 😠`,
+                'https://tenor.com/blRIR.gif',
+                'https://tenor.com/bFH99.gif'
+            ];
+    
+            songArray = [];
+            connection.dispatcher.end();
+            songPlaying = false;
+
+            await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
+            return;
         }
     }
 }
