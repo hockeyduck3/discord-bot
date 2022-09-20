@@ -183,3 +183,17 @@ module.exports = {
         }
     }
 }
+
+if (command == 'queue' || command == 'q') {
+    const nowPlaying = new MessageEmbed()
+        .setColor([255, 0, 255])
+        .setAuthor('Tilly Music Player')
+        .addFields(
+            { name: `Playing ${song.title}`, value: `${song.url}` },
+            { name:'\u200B', value: '\u200B' },
+        )
+        .setThumbnail(song.image)
+        .setTimestamp()
+
+    await message.channel.send(nowPlaying);
+}
