@@ -1,6 +1,7 @@
 const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
+const skip = require('../functions/music/skip');
 
 // Global Vars
 let songArray = [];
@@ -124,11 +125,8 @@ module.exports = {
             if (!vc) {
                 message.reply('You gotta be in a voice channel bro');
                 return;
-            } else if (songArray == 0) {
-                message.channel.send('There are no other songs to skip');
-            } else {
-                connection.dispatcher.end();
             }
+            skip(message, songArray, connection);
         }
 
 
