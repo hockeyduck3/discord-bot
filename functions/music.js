@@ -8,6 +8,8 @@ let songPlaying = false;
 let connection;
 let previousSongs = [];
 let currentSong;
+let prevSong;
+let prevCalled;
 
 module.exports = {
     name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev'],
@@ -83,8 +85,15 @@ module.exports = {
                             songArray = [];
                             vc.leave();
                         } else {
+                            prevSong = currentSong;
+                            previousSongs.unshift(prevSong);
                             playSong(songArray[0]);
                             songArray.shift();
+
+                            if (prevCalled) {
+                                previousSongs.shift();
+                                prevCalled = false;
+                            }
                         }
                     });
         
@@ -118,7 +127,6 @@ module.exports = {
             } else if (songArray == 0) {
                 message.channel.send('There are no other songs to skip');
             } else {
-                previousSongs.unshift(currentSong);
                 connection.dispatcher.end();
             }
         }
@@ -165,10 +173,10 @@ module.exports = {
             if (previousSongs[0] != currentSong && previousSongs.length != 0) {
                 songArray.unshift(currentSong);
                 songArray.unshift(previousSongs[0]);
+                previousSongs.shift();
+                prevCalled = true;
 
                 connection.dispatcher.end();
-
-                previousSongs.shift();
             } else {
                 message.channel.send('There are no previous songs');
             }
