@@ -49,7 +49,7 @@ module.exports = {
                 return;
             }
 
-            let incomingVideo = args.join(' ');
+            let incomingVideo = `${args.join(' ')} audio`;
 
             const findVideo = async (query) => {
                 const result = await ytsearch(query);
