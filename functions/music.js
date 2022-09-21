@@ -2,10 +2,11 @@ const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
 const skip = require('./music functions/skip');
+const stop = require('./music functions/stop');
 
 // Global Vars
 let songArray = [];
-let songPlaying = false;
+let songObj = {songPlaying: false};
 let connection;
 let previousSongs = [];
 let currentSong;
@@ -54,9 +55,9 @@ module.exports = {
 
             const video = await findVideo(incomingVideo);
 
-            if (!songPlaying) {
+            if (!songObj.songPlaying) {
                 connection = await vc.join();
-                songPlaying = true;
+                songObj.songPlaying = true;
             } else {
                 songArray.push(video);
 
@@ -81,7 +82,7 @@ module.exports = {
                 connection.play(stream, {seek: 0, volume: 1})
                     .on('finish', () =>{
                         if(songArray.length == 0) {
-                            songPlaying = false;
+                            songObj.songPlaying = false;
                             previousSongs = [];
                             songArray = [];
                             vc.leave();
@@ -135,30 +136,9 @@ module.exports = {
             if (!vc) {
                 message.reply('You gotta be in a voice channel bro');
                 return;
-            } else {
-
-                const answerArr = [
-                    'https://media.giphy.com/media/KB59SOANzxlaU/giphy.gif',
-                    'https://media.giphy.com/media/MmuJfAxgysL5LajJMj/giphy.gif',
-                    'https://tenor.com/bbPdG.gif',
-                    'Fine, have it your way. 🙂',
-                    `*sniff* you're soooo meannnn! But I guess I'll go 😿`,
-                    `Oh WOWWWWWW. I see how it is. 😠`,
-                    'https://tenor.com/blRIR.gif',
-                    'https://tenor.com/bFH99.gif'
-                ];
-
-                songArray = [];
-                previousSongs = [];
-                if (!songPlaying) {
-                    message.reply(`I'm not even in the voice channel fool`);
-                } else {
-                    connection.dispatcher.end();
-                    songPlaying = false;
-                    await message.reply(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
-                }
-                return;
             }
+            
+            stop(songObj, connection, message);
         }
 
         // Everything for the previous song command
