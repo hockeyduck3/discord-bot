@@ -1,7 +1,7 @@
 const ytdl = require('ytdl-core');
 const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
-const skip = require('../functions/music/skip');
+const skip = require('./music functions/skip');
 
 // Global Vars
 let songArray = [];
