@@ -5,12 +5,15 @@ const skip = require('./music functions/skip');
 const stop = require('./music functions/stop');
 
 // Global Vars
-let songArray = [];
-let songObj = {songPlaying: false};
+let songObj = {
+    songPlaying: false,
+    currentSong: null,
+    songArray: [],
+    previousSongs: [],
+    prevSong: null
+};
+
 let connection;
-let previousSongs = [];
-let currentSong;
-let prevSong;
 let prevCalled;
 
 module.exports = {
@@ -59,7 +62,7 @@ module.exports = {
                 connection = await vc.join();
                 songObj.songPlaying = true;
             } else {
-                songArray.push(video);
+                songObj.songArray.push(video)
 
                 const queueEmbed = new MessageEmbed()
                     .setColor([2, 150, 255])
@@ -73,7 +76,7 @@ module.exports = {
             }
 
             const playSong = async(song) => {
-                currentSong = song;
+                songObj.currentSong = song
 
                 const stream = ytdl(song.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
                     console.log(err);
@@ -81,19 +84,19 @@ module.exports = {
                 });
                 connection.play(stream, {seek: 0, volume: 1})
                     .on('finish', () =>{
-                        if(songArray.length == 0) {
+                        if(songObj.songArray.length == 0) {
                             songObj.songPlaying = false;
-                            previousSongs = [];
-                            songArray = [];
+                            songObj.previousSongs = [];
+                            songObj.songArray = [];
                             vc.leave();
                         } else {
-                            prevSong = currentSong;
-                            previousSongs.unshift(prevSong);
-                            playSong(songArray[0]);
-                            songArray.shift();
+                            songObj.prevSong = songObj.currentSong;
+                            songObj.previousSongs.unshift(songObj.prevSong);
+                            playSong(songObj.songArray[0]);
+                            songObj.songArray.shift()
 
                             if (prevCalled) {
-                                previousSongs.shift();
+                                songObj.previousSongs.shift()
                                 prevCalled = false;
                             }
                         }
@@ -127,7 +130,7 @@ module.exports = {
                 message.reply('You gotta be in a voice channel bro');
                 return;
             }
-            skip(message, songArray, connection);
+            skip(songObj, connection, message);
         }
 
 
@@ -148,10 +151,10 @@ module.exports = {
                 return;
             }
 
-            if (previousSongs[0] != currentSong && previousSongs.length != 0) {
-                songArray.unshift(currentSong);
-                songArray.unshift(previousSongs[0]);
-                previousSongs.shift();
+            if (songObj.previousSongs[0] != songObj.currentSong && songObj.previousSongs.length != 0) {
+                songObj.songArray.unshift(songObj.currentSong)
+                songObj.songArray.unshift(songObj.previousSongs[0]);
+                songObj.previousSongs.shift();
                 prevCalled = true;
 
                 connection.dispatcher.end();
