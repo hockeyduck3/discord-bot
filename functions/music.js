@@ -3,6 +3,7 @@ const ytsearch = require('yt-search');
 const { MessageEmbed } = require('discord.js');
 const skip = require('./music functions/skip');
 const stop = require('./music functions/stop');
+const previous = require('./music functions/previous');
 
 // Global Vars
 let songObj = {
@@ -10,11 +11,11 @@ let songObj = {
     currentSong: null,
     songArray: [],
     previousSongs: [],
-    prevSong: null
+    prevSong: null,
+    prevCalled: false
 };
 
 let connection;
-let prevCalled;
 
 module.exports = {
     name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev'],
@@ -95,9 +96,9 @@ module.exports = {
                             playSong(songObj.songArray[0]);
                             songObj.songArray.shift()
 
-                            if (prevCalled) {
+                            if (songObj.prevCalled) {
                                 songObj.previousSongs.shift()
-                                prevCalled = false;
+                                songObj.prevCalled = false;
                             }
                         }
                     });
@@ -151,16 +152,7 @@ module.exports = {
                 return;
             }
 
-            if (songObj.previousSongs[0] != songObj.currentSong && songObj.previousSongs.length != 0) {
-                songObj.songArray.unshift(songObj.currentSong)
-                songObj.songArray.unshift(songObj.previousSongs[0]);
-                songObj.previousSongs.shift();
-                prevCalled = true;
-
-                connection.dispatcher.end();
-            } else {
-                message.channel.send('There are no previous songs');
-            }
+            previous(songObj, connection, message);
         }
 
         if (command == 'queue' || command == 'q') {
