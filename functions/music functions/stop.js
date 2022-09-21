@@ -13,11 +13,14 @@ module.exports = function stop(songObj, connection, message) {
     if (!songObj.songPlaying) {
         message.reply(`I'm not even in the voice channel fool`);
     } else {
-        connection.dispatcher.end();
         songObj.songPlaying = false;
+        songObj.songArray = [];
+        songObj.previousSongs = [];
+        songObj.currentSong = null;
+        songObj.prevSong = null;
+        connection.dispatcher.end();
         message.channel.send(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
     }
-
-    console.log(`From the stop func songPlaying = ${songObj.songPlaying}`);
+    
     return;
 }
