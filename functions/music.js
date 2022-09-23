@@ -4,6 +4,7 @@ const { MessageEmbed } = require('discord.js');
 const skip = require('./music functions/skip');
 const stop = require('./music functions/stop');
 const previous = require('./music functions/previous');
+const queue = require('./music functions/queue');
 
 // Global Vars
 let songObj = {
@@ -25,30 +26,18 @@ module.exports = {
         const vc = message.member.voice.channel;
         const command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
 
-        if (!vc) {
-            message.reply('You gotta be in a voice channel bro');
-            return;
-        }
+        if (!vc) return message.reply('You gotta be in a voice channel');
 
         const perms = vc.permissionsFor(message.client.user);
 
-        if (!perms.has('CONNECT')) {
-            message.reply('You\'re missing the CONNECT permission fool');
-            return;
-        }
+        if (!perms.has('CONNECT')) return message.reply('You\'re missing the CONNECT permission');
 
-        if (!perms.has('SPEAK')) {
-                message.reply('You\'re missing the SPEAK permission fool');
-                return;
-        }
+        if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');        
 
         // Everything for the play command
         if (command == 'play' || command == 'p') {
-            if (!args.length) {
-                message.reply('You need to add another argument bro');
-                return;
-            }
-
+            if (!args.length) return message.reply('You need to add another argument bro');
+            
             let incomingVideo = `${args.join(' ')} audio`;
 
             const findVideo = async (query) => {
@@ -127,46 +116,30 @@ module.exports = {
 
         // Everything for the skip command
         if (command == 'skip') {
-            if (!vc) {
-                message.reply('You gotta be in a voice channel bro');
-                return;
-            }
+            if (!vc) return message.reply('You gotta be in a voice channel bro');
+
             skip(songObj, connection, message);
         }
 
 
         // Everything for the stop / leave command
         if (command == 'stop' || command == 'leave') {
-            if (!vc) {
-                message.reply('You gotta be in a voice channel bro');
-                return;
-            }
+            if (!vc) return message.reply('You gotta be in a voice channel');
             
             stop(songObj, connection, message);
         }
 
         // Everything for the previous song command
         if (command == 'previous' || command == 'prev') {
-            if (!vc) {
-                message.reply('You gotta be in a voice channel to make me leave fool');
-                return;
-            }
+            if (!vc) return message.reply('You gotta be in a voice channel');
 
             previous(songObj, connection, message);
         }
 
         if (command == 'queue' || command == 'q') {
-            const nowPlaying = new MessageEmbed()
-                .setColor([255, 0, 255])
-                .setAuthor('Tilly Music Player')
-                .addFields(
-                    { name: `Playing ${song.title}`, value: `${song.url}` },
-                    { name:'\u200B', value: '\u200B' },
-                )
-                .setThumbnail(song.image)
-                .setTimestamp()
-        
-            message.channel.send(nowPlaying);
+            if (!vc) return message.reply('You gotta be in a voice channel');
+
+            queue(songObj, message);
         }
     }
 }
