@@ -81,7 +81,7 @@ module.exports = {
                 result = 'tails';
             }
 
-            const dadMessage = new MessageEmbed()
+            const coinMessage = new MessageEmbed()
                 .setColor([255, 0, 5])
                 .setAuthor('Tilly Help Center')
                 .setTitle('Flip a coin')
@@ -93,7 +93,7 @@ module.exports = {
                 )
                 .setFooter('Trust me, I\'m not biased towards heads or tails. I\'m lines of code for Pete\'s sake.')
 
-                message.channel.send(dadMessage);
+                message.channel.send(coinMessage);
         }
     }
 }
