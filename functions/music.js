@@ -19,7 +19,7 @@ let songObj = {
 let connection;
 
 module.exports = {
-    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev'],
+    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev', 'queue'],
     description: 'play song in discord channel',
     async execute(message, args) {
         // Local Vars
@@ -136,7 +136,7 @@ module.exports = {
             previous(songObj, connection, message);
         }
 
-        if (command == 'queue' || command == 'q') {
+        if (command == 'queue') {
             if (!vc) return message.reply('You gotta be in a voice channel');
 
             queue(songObj, message);
