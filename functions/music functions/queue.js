@@ -5,9 +5,13 @@ let queueArr = [];
 function makeQueuePrev(songObj) {
     let reverseArr = [...songObj.previousSongs];
 
-    for(let i = 0; i < songObj.previousSongs.length; i++) {
-        reverseArr.push(songObj.previousSongs[i]);
+    reverseArr.reverse();
+
+    for(let i = 0; i < reverseArr.length; i++) {
+        queueArr.push(reverseArr[i].title);
     }
+
+    return;
 }
 
 function makeQueueNext(songObj) {
@@ -29,17 +33,23 @@ module.exports = function queue(songObj, message) {
         makeQueueNext(songObj);
     }
 
-    return;
+    const embedMessage = {
+        color: [255, 0, 255],
+        title: 'Song History',
+        author: {
+            name: 'Tilly Music Player',
+        },
+        fields: [],
+        timestamp: new Date().toISOString(),
+    };
 
-    const nowPlaying = new MessageEmbed()
-        .setColor([255, 0, 255])
-        .setAuthor('Tilly Music Player')
-        .addFields(
-            { name: `Playing ${song.title}`, value: `${song.url}` },
-            { name:'\u200B', value: '\u200B' },
-        )
-        .setThumbnail(song.image)
-        .setTimestamp()
-
-    message.channel.send(nowPlaying);
+    
+    queueArr.forEach(e => {
+        embedMessage.fields.push({ name: '\u200B', value: `${e}`});
+    })
+        
+        
+    const queueMessage = new MessageEmbed(embedMessage)
+    
+    message.channel.send(queueMessage);
 }
