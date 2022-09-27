@@ -2,42 +2,33 @@ const { MessageEmbed } = require('discord.js');
 
 let queueArr = [];
 
-function makeQueuePrev(songObj) {
-    let reverseArr = [...songObj.previousSongs];
-
-    reverseArr.reverse();
-
-    for(let i = 0; i < reverseArr.length; i++) {
-        queueArr.push(reverseArr[i].title);
+function makeQueue(songObj) {
+    if(songObj.currentSong != null) {
+        queueArr.push({name: '\u200B', value: `Current Song: [${songObj.currentSong.title}](${songObj.currentSong.url})`})
     }
 
-    return;
-}
-
-function makeQueueNext(songObj) {
-    for(let i = 0; i < songObj.songArray.length; i++) {
-        console.log(`(Next) ${songObj.songArray[i].title}`);
-    }
+    songObj.songArray.forEach(function (e, i) {
+        queueArr.push({name: '\u200B', value: `${i+1}) [${e.title}](${e.url})`});
+    });
 }
 
 module.exports = function queue(songObj, message) {
     if (!songObj.songPlaying) return message.channel.send('Nothing\'s playing right meow');
 
-    if (songObj.songArray.length == 0 && songObj.previousSongs.length == 0) return message.channel.send('There\'s currently nothing in your song history or in your song queue');
+    if (songObj.songArray.length == 0 && songObj.prevSong == null) return message.channel.send('There\'s currently nothing in your song history or in your song queue');
 
-    if (songObj.previousSongs.length != 0) {
-        makeQueuePrev(songObj);
+    if (songObj.prevSong != null && songObj.prevSong != songObj.songArray[0]) {
+        queueArr.push({name: '\u200B', value: `Previous Song: [${songObj.prevSong.title}](${songObj.prevSong.url})`})
     }
 
     if (songObj.songArray.length != 0) {
-        makeQueueNext(songObj);
+        makeQueue(songObj);
     }
 
     const embedMessage = {
-        color: [255, 0, 255],
-        title: 'Song History',
+        color: [50, 255, 150],
         author: {
-            name: 'Tilly Music Player',
+            name: 'Tilly Music Player: Song Queue',
         },
         fields: [],
         timestamp: new Date().toISOString(),
@@ -45,11 +36,14 @@ module.exports = function queue(songObj, message) {
 
     
     queueArr.forEach(e => {
-        embedMessage.fields.push({ name: '\u200B', value: `${e}`});
-    })
+        embedMessage.fields.push(e);
+    });
+
+    embedMessage.fields.push({ name: '\u200B', value: '\u200B'});
         
         
-    const queueMessage = new MessageEmbed(embedMessage)
+    const queueMessage = new MessageEmbed(embedMessage);
     
     message.channel.send(queueMessage);
+    queueArr = [];
 }
