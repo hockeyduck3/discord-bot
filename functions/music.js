@@ -1,5 +1,5 @@
 const ytdl = require('ytdl-core');
-const ytsearch = require('yt-search');
+const { youtube } = require('scrape-youtube');
 const { MessageEmbed } = require('discord.js');
 const skip = require('./music functions/skip');
 const stop = require('./music functions/stop');
@@ -41,7 +41,7 @@ module.exports = {
             let incomingVideo = `${args.join(' ')} audio`;
 
             const findVideo = async (query) => {
-                const result = await ytsearch(query);
+                const result = await youtube.search(query);
 
                 return (result.videos.length > 1) ? result.videos[0] : null;
             }
@@ -57,7 +57,7 @@ module.exports = {
                 const queueEmbed = new MessageEmbed()
                     .setColor([2, 150, 255])
                     .setAuthor(`Added ${video.title} to the queue 👍`)
-                    .setThumbnail(video.image)
+                    .setThumbnail(video.thumbnail)
                     .setTimestamp()
                     .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
 
@@ -68,7 +68,7 @@ module.exports = {
             const playSong = async(song) => {
                 songObj.currentSong = song
 
-                const stream = ytdl(song.url, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
+                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
                     console.log(err);
                     vc.leave();
                 });
@@ -96,10 +96,10 @@ module.exports = {
                         .setColor([255, 0, 255])
                         .setAuthor('Tilly Music Player')
                         .addFields(
-                            { name: `Playing ${song.title}`, value: `${song.url}` },
+                            { name: `Playing ${song.title}`, value: `${song.link}` },
                             { name:'\u200B', value: '\u200B' },
                         )
-                        .setThumbnail(song.image)
+                        .setThumbnail(song.thumbnail)
                         .setTimestamp()
             
                 await message.channel.send(nowPlaying);
