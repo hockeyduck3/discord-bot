@@ -1,15 +1,21 @@
 const { MessageEmbed } = require('discord.js');
 
 let queueArr = [];
+let queueArrNum = 0;
 
 function makeQueue(songObj) {
     if(songObj.currentSong != null) {
-        queueArr.push({name: '\u200B', value: `Current Song: [${songObj.currentSong.title}](${songObj.currentSong.url})`})
+        queueArr.push({name: '\u200B', value: `Current Song: [${songObj.currentSong.title}](${songObj.currentSong.link})`})
     }
 
-    songObj.songArray.forEach(function (e, i) {
-        queueArr.push({name: '\u200B', value: `${i+1}) [${e.title}](${e.url})`});
-    });
+    for (let i = 0; i < songObj.songArray.length; i++) {
+        if (i != 10) {
+            queueArr.push({name: '\u200B', value: `${i+1}) [${songObj.songArray[i].title}](${songObj.songArray[i].link})`});
+        } else {
+            queueArrNum = songObj.songArray.length - 10;
+            break;
+        }
+    }
 }
 
 module.exports = function queue(songObj, message) {
@@ -18,7 +24,7 @@ module.exports = function queue(songObj, message) {
     if (songObj.songArray.length == 0 && songObj.prevSong == null) return message.channel.send('There\'s currently nothing in your song history or in your song queue');
 
     if (songObj.prevSong != null && songObj.prevSong != songObj.songArray[0]) {
-        queueArr.push({name: '\u200B', value: `Previous Song: [${songObj.prevSong.title}](${songObj.prevSong.url})`})
+        queueArr.push({name: '\u200B', value: `Previous Song: [${songObj.prevSong.title}](${songObj.prevSong.link})`})
     }
 
     if (songObj.songArray.length != 0) {
@@ -38,6 +44,11 @@ module.exports = function queue(songObj, message) {
     queueArr.forEach(e => {
         embedMessage.fields.push(e);
     });
+
+    if (queueArrNum != 0) {
+        embedMessage.fields.push({ name: '\u200B', value: `and ${queueArrNum} more songs`});
+        queueArrNum = 0;
+    }
 
     embedMessage.fields.push({ name: '\u200B', value: '\u200B'});
         
