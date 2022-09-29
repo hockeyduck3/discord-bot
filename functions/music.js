@@ -68,7 +68,7 @@ module.exports = {
             const playSong = async(song) => {
                 songObj.currentSong = song
 
-                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio'}).on('error', err => {
+                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio', highWaterMark: 1<<25}).on('error', err => {
                     console.log(err);
                     vc.leave();
                 });
