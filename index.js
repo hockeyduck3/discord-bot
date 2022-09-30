@@ -27,7 +27,7 @@ bot.once('ready', () => {
 
 bot.login(process.env.token);
 
-const prefix = '#';
+const prefix = '!';
 
 bot.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
