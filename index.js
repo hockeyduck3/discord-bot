@@ -25,7 +25,7 @@ bot.once('ready', () => {
 	console.log('Online');
 });
 
-bot.login(process.env.token);
+bot.login(process.env.devToken);
 
 const prefix = '!';
 
