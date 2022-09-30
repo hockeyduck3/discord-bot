@@ -22,12 +22,12 @@ for (const file of functions) {
 }
 
 bot.once('ready', () => {
-	console.log('Dev Online');
+	console.log('Online');
 });
 
-bot.login(process.env.devToken);
+bot.login(process.env.token);
 
-const prefix = '!';
+const prefix = process.env.prefix;
 
 bot.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
