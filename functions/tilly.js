@@ -2,6 +2,7 @@ const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const dadHelp = require('./help functions/dadHelp');
 const coinHelp = require('./help functions/coinHelp');
+const musicHelp = require('./help functions/musicHelp');
 
 module.exports = {
     name: ['tilly', 'hello', 'hi', 'help'],
@@ -50,6 +51,10 @@ module.exports = {
 
         if (helpArg == 'flip' || helpArg == 'flipcoin') {
             coinHelp(message);
+        }
+
+        if (helpArg == 'music') {
+            musicHelp(message);
         }
     }
 }
