@@ -22,7 +22,7 @@ for (const file of functions) {
 }
 
 bot.once('ready', () => {
-	console.log('Online I\'m back baby!');
+	console.log('Online');
 });
 
 bot.login(process.env.token);
