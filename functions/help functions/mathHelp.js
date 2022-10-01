@@ -1,23 +1,32 @@
 const { MessageEmbed } = require('discord.js');
 
 module.exports = function musicHelp(message) {
-    const musicMessage = new MessageEmbed()
+    const answerArr = [
+        '2 + 2 is 4',
+        '1 + 1 is 2',
+        '3 + 3 is 6',
+        '3 - 2 is 1',
+        '14,000,605 x 2 is 28,001,210',
+        '5 + 5 is 10',
+        '1 x 1 is 1',
+        '2 x 2 is 4',
+        '6 / 3 is 2',
+        '10 / 2 is 5',
+        '1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 is 10',
+        'oof + skies is oofskies... I mean 1 + 2 is 3'
+    ];
+
+    const mathMessage = new MessageEmbed()
         .setColor([255, 0, 5])
         .setAuthor('Tilly Help Center')
         .setTitle('Math help')
-        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say something like #math (2+2)')
+        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say something like #math and give me a problem to calculate.')
         .addFields(
             { name: '\u200B', value: '\u200B' },
-            { name: 'Playing music', value: 'For me to actually start playing music I first need to know what you wanna hear. So you can say #p or #play and then give me a song name or a youtube link!', inline: true},
-            { name: 'Stop', value: 'If at any point you want me to stop playing music just tell me to #stop or #leave. But just know, it may or may not hurt my feelings 😢', inline: true},
-            { name: '\u200B', value: '\u200B' },
-            { name: 'Skipping Music', value: 'Say you\'re listening to song a song that you\'re just not digging anymore. Well all you have to do is say #skip and I\'ll go to the next song in the queue! But just know this command won\'t work if there\'s nothing for me to skip to.', inline: true},
-            { name: 'Previous track', value: 'Did you skip a track that you were actually digging? Well that was dumb. But luckily I have a command for that too. Just say #prev or #previous and I\'ll got back to the previous track. But just like the skip command, this command won\'t work if there\'s nothing for me to go back to.', inline: true},
-            { name: '\u200B', value: '\u200B' },
-            { name: 'See the queue', value: 'Did you already forget what songs you put into the queue? Well I guess if you want I can show you what\'s coming up next. Just say #q or #queue and I will show you the last song I played, the song that I am currently playing, and since you asked nicely I will show you the next 10 songs. Sound good? 👍' },
+            { name: 'Here is an example of my math skills!', value: `The answer to ${answerArr[Math.floor(Math.random() * answerArr.length)]}. Duh.` },
             { name: '\u200B', value: '\u200B' }
         )
-        .setFooter('Just know that if I play a song you don\'t like, that\'s becasue you weren\'t specific enough 😊')
+        .setFooter('I can do lots of basic math problems, and even some that you humans just can\'t comprehend! But there\'s also some stuff that even I don\'t understand so please go easy on me 🥺')
 
-        message.channel.send(musicMessage);
+        message.channel.send(mathMessage);
 }
