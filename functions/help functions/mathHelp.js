@@ -20,7 +20,7 @@ module.exports = function musicHelp(message) {
         .setColor([255, 0, 5])
         .setAuthor('Tilly Help Center')
         .setTitle('Math help')
-        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say something like #math and give me a problem to calculate.')
+        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say something like #math or #calc or #m and then give me a problem to calculate.')
         .addFields(
             { name: '\u200B', value: '\u200B' },
             { name: 'Here is an example of my math skills!', value: `The answer to ${answerArr[Math.floor(Math.random() * answerArr.length)]}. Duh.` },
