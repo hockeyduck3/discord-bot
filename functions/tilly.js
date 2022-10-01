@@ -3,6 +3,7 @@ const { MessageEmbed } = require('discord.js');
 const dadHelp = require('./help functions/dadHelp');
 const coinHelp = require('./help functions/coinHelp');
 const musicHelp = require('./help functions/musicHelp');
+const mathHelp = require('./help functions/mathHelp');
 
 module.exports = {
     name: ['tilly', 'hello', 'hi', 'help'],
@@ -55,6 +56,10 @@ module.exports = {
 
         if (helpArg == 'music') {
             musicHelp(message);
+        }
+
+        if (helpArg == 'math') {
+            mathHelp(message);
         }
     }
 }

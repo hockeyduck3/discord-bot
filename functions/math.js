@@ -1,5 +1,5 @@
 module.exports = {
-    name: 'math',
+    name: ['math', 'calc', 'm'],
     description: 'Do Common Math',
     execute(message, args) {
         if (args.length === 0) {
@@ -8,13 +8,17 @@ module.exports = {
         }
 
         if (args.length % 2 === 0) {
-            message.reply('Not enough arguments to calculate.');
+            message.reply('That\'s not enough info to calculate bro');
             return;
         }
 
         let numArr = [];
     
         for (let i = 0; i < args.length; i++) {
+            if (args[i].toLowerCase().includes('x')) {
+                args[i] = '*';
+            }
+
             if (args[i].match(/[0-9]/g)) {
                 if (args[i].includes('(')) {
                     const newNum = args[i].replace(/\(/g, '');
