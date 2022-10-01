@@ -26,24 +26,32 @@ module.exports = {
         const vc = message.member.voice.channel;
         const command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
 
-        if (!vc) return message.reply('You gotta be in a voice channel');
+        // if (!vc) return message.reply('You gotta be in a voice channel');
 
-        const perms = vc.permissionsFor(message.client.user);
+        // const perms = vc.permissionsFor(message.client.user);
 
-        if (!perms.has('CONNECT')) return message.reply('You\'re missing the CONNECT permission');
+        // if (!perms.has('CONNECT')) return message.reply('You\'re missing the CONNECT permission');
 
-        if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');        
+        // if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');       
 
         // Everything for the play command
         if (command == 'play' || command == 'p') {
             if (!args.length) return message.reply('You need to add another argument bro');
-            
-            let incomingVideo = `${args.join(' ')} audio`;
+
+            let incomingVideo;
+
+            let testArg = ytdl.validateURL(args.join(' '));
+
+            if (testArg) {
+                incomingVideo = ytdl.getURLVideoID(args.join(' '));
+            } else {
+                incomingVideo = `${args.join(' ')} audio`;
+            }
 
             const findVideo = async (query) => {
                 const result = await youtube.search(query);
 
-                return (result.videos.length > 1) ? result.videos[0] : null;
+                return (result.videos.length >= 1) ? result.videos[0] : null;
             }
 
             const video = await findVideo(incomingVideo);
