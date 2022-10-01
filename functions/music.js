@@ -136,7 +136,7 @@ module.exports = {
             previous(songObj, connection, message);
         }
 
-        if (command == 'queue') {
+        if (command == 'queue' || command == 'q') {
             if (!vc) return message.reply('You gotta be in a voice channel');
 
             queue(songObj, message);
