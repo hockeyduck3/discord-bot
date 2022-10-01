@@ -43,7 +43,7 @@ module.exports = {
             const findVideo = async (query) => {
                 const result = await youtube.search(query);
 
-                return (result.videos.length > 1) ? result.videos[0] : null;
+                return (result.videos.length >= 1) ? result.videos[0] : null;
             }
 
             const video = await findVideo(incomingVideo);
