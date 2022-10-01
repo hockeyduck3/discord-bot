@@ -25,20 +25,19 @@ module.exports = {
         // Local Vars
         const vc = message.member.voice.channel;
         const command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
+        let incomingVideo;
 
-        // if (!vc) return message.reply('You gotta be in a voice channel');
+        if (!vc) return message.reply('You gotta be in a voice channel');
 
-        // const perms = vc.permissionsFor(message.client.user);
+        const perms = vc.permissionsFor(message.client.user);
 
-        // if (!perms.has('CONNECT')) return message.reply('You\'re missing the CONNECT permission');
+        if (!perms.has('CONNECT')) return message.reply('You\'re missing the CONNECT permission');
 
-        // if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');       
+        if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');       
 
         // Everything for the play command
         if (command == 'play' || command == 'p') {
             if (!args.length) return message.reply('You need to add another argument bro');
-
-            let incomingVideo;
 
             let testArg = ytdl.validateURL(args.join(' '));
 
