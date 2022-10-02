@@ -5,6 +5,7 @@ const skip = require('./music functions/skip');
 const stop = require('./music functions/stop');
 const previous = require('./music functions/previous');
 const queue = require('./music functions/queue');
+const remove = require('./music functions/remove');
 
 // Global Vars
 let songObj = {
@@ -19,7 +20,7 @@ let songObj = {
 let connection;
 
 module.exports = {
-    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev', 'queue'],
+    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev', 'queue', 'remove'],
     description: 'play song in discord channel',
     async execute(message, args) {
         // Local Vars
@@ -59,7 +60,7 @@ module.exports = {
                 connection = await vc.join();
                 songObj.songPlaying = true;
             } else {
-                songObj.songArray.push(video)
+                songObj.songArray.push(video);
 
                 const queueEmbed = new MessageEmbed()
                     .setColor([2, 150, 255])
@@ -147,6 +148,20 @@ module.exports = {
             if (!vc) return message.reply('You gotta be in a voice channel');
 
             queue(songObj, message);
+        }
+
+        if (command == 'remove') {
+            if (!songObj.songPlaying) return message.reply('I\'m not playing anything right meow');
+
+            if (args.length == 0) return message.reply('You didn\'t send enough arguments for me to work with. Try also sending the number of the song you want me to remove.');
+
+            if(!Number.isInteger(parseInt(args[0]))) return message.reply('I need you to tell me the number of the song you want me to remove. So it should look like "#remove 1". Or if you don\'t know the number of the song in the queue that you want to remove say #queue.');
+
+            if (args.length > 1) return message.reply('I can only remove 1 song at the moment');
+
+            if (songObj.songArray.length <= 0) return message.reply('There\'s nothing in the queue for me to remove');
+
+            remove(songObj, message, parseInt(args[0]));
         }
     }
 }
