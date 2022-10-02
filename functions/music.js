@@ -20,7 +20,7 @@ let songObj = {
 let connection;
 
 module.exports = {
-    name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev', 'queue', 'remove'],
+    // name: ['play', 'p', 'skip', 'stop', 'leave', 'previous', 'prev', 'queue', 'remove'],
     description: 'play song in discord channel',
     async execute(message, args) {
         // Local Vars
