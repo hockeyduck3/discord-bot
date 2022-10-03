@@ -5,15 +5,6 @@ const { Console } = require('console');
 
 const serverMap = new Map();
 
-let songObj = {
-    songPlaying: false,
-    currentSong: null,
-    songArray: [],
-    previousSongs: [],
-    prevSong: null,
-    prevCalled: false
-};
-
 module.exports = {
     name: ['play', 'p'],
     description: 'music thing',
@@ -29,8 +20,6 @@ module.exports = {
 
         if (!perms.has('SPEAK')) return message.reply('You\'re missing the SPEAK permission fool');
 
-        const server = serverMap.get(message.guild.id);
-
         if (command == 'play' || command == 'p') {
             if (!args.length) return message.reply('You need to add another argument bro');
 
@@ -44,6 +33,38 @@ module.exports = {
                 return (result.videos.length >= 1) ? result.videos[0] : null;
             }
 
+            const playSong = async(guildId, song) => {
+                const server = serverMap.get(guildId);
+
+                if (!song) {
+                    server.voice.leave();
+                    serverMap.delete(guildId);
+                    return;
+                } else {
+                    const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio', highWaterMark: 1<<25}).on('error', err => {
+                        console.log(err);
+                        server.text.send('There was an error with that stream');
+                        server.voice.leave();
+                    });
+                    server.connection.play(stream, {seek: 0, volume: 1})
+                        .on('finish', () => {
+                            server.voice.leave();
+                        })
+                }
+
+                const nowPlaying = new MessageEmbed()
+                        .setColor([255, 0, 255])
+                        .setAuthor('Tilly Music Player')
+                        .addFields(
+                            { name: `Playing ${song.title}`, value: `${song.link}` },
+                            { name:'\u200B', value: '\u200B' },
+                        )
+                        .setThumbnail(song.thumbnail)
+                        .setTimestamp()
+            
+                await server.text.send(nowPlaying);
+            }
+
             if (checkArg) {
                 let info = await ytdl.getBasicInfo(args[0]);
 
@@ -54,12 +75,40 @@ module.exports = {
                 }
             } else {
                 let foundVideo = await findVideo(`${args.join(' ')} audio`);
-                
+
                 video = {
                     title: foundVideo.title,
                     thumbnail: foundVideo.thumbnail,
                     link: foundVideo.link
                 }
+            }
+
+            if (!serverMap.get(message.guild.id)) {
+                const songObj = {
+                    voice: vc,
+                    connection: 'not null or something',
+                    text: message.channel,
+                    currentSong: null,
+                    songArray: [],
+                    previousSongs: [],
+                    prevSong: null,
+                    prevCalled: false
+                };
+
+                serverMap.set(message.guild.id, songObj);
+                songObj.songArray.push(video);
+                
+                try {
+                    songObj.connection = await vc.join();
+                    playSong(message.guild.id, songObj.songArray[0]);
+                } catch (error) {
+                    serverMap.delete(message.guild.id);
+                    message.channel.send('Had trouble joining the voice channel');
+                    throw error;
+                }
+
+            } else {
+                // idk
             }
         }
     }
