@@ -4,11 +4,12 @@ const { MessageEmbed } = require('discord.js');
 const stop = require('./music functions/stop');
 const skip = require('./music functions/skip');
 const queueFunc = require('./music functions/queue');
+const previous = require('./music functions/previous');
 
 const serverMap = new Map();
 
 module.exports = {
-    name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q'],
+    name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q', 'previous', 'prev'],
     description: 'music thing',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -39,7 +40,11 @@ module.exports = {
 
             const playSong = async(guildId, song) => {
                 const server = serverMap.get(guildId);
-                server.currentSong = song;
+
+                if (!server.stopCalled) {
+                    server.currentSong = song;
+                }
+
                 server.songArray.shift();
 
                 if (!song) {
@@ -104,13 +109,14 @@ module.exports = {
             if (!queue) {
                 const songObj = {
                     voice: vc,
-                    connection: 'not null or something',
+                    connection: null,
                     text: message.channel,
                     currentSong: null,
                     songArray: [],
                     previousSongs: [],
                     prevSong: null,
-                    prevCalled: false
+                    prevCalled: false,
+                    stopCalled: false
                 };
 
                 serverMap.set(message.guild.id, songObj);
@@ -143,12 +149,15 @@ module.exports = {
         if (command == 'stop' || command == 'leave') {
             let guild = serverMap.get(message.guild.id);
 
-            if (!guild) {
-                message.reply(`I'm not even in the voice channel fool`);
-            } else {
-                stop(guild);
-                serverMap.delete(message.guild.id);
-            }
+            if (!vc) return message.reply('You gotta be in the voice channel fam');
+
+            if (!guild) return message.reply('I\'m not even playing anything');
+
+            guild.stopCalled = true;
+
+            stop(guild);
+
+            serverMap.delete(message.guild.id);
         }
 
         if (command == 'skip') {
@@ -159,6 +168,16 @@ module.exports = {
             if (!guild) return message.reply('I\'m not even playing anything');
 
             skip(serverMap.get(message.guild.id));
+        }
+
+        if (command == 'previous' || command == 'prev') {
+            let guild = serverMap.get(message.guild.id);
+
+            if (!vc) return message.reply('You gotta be in the voice channel fam');
+
+            if (!guild) return message.reply('I\'m not even playing anything');
+
+            previous(guild);
         }
 
         if (command == 'queue' || command == 'q') {

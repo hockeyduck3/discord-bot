@@ -1,13 +1,13 @@
-module.exports = function previous(songObj, connection, message) {
-    if (songObj.previousSongs[0] != songObj.currentSong && songObj.previousSongs.length != 0) {
-        songObj.songArray.unshift(songObj.currentSong)
-        songObj.songArray.unshift(songObj.previousSongs[0]);
-        songObj.previousSongs.shift();
-        songObj.prevCalled = true;
+module.exports = function previous(guild) {
+    if (guild.previousSongs[0] != guild.currentSong && guild.previousSongs.length != 0) {
+        guild.songArray.unshift(guild.currentSong)
+        guild.songArray.unshift(guild.previousSongs[0]);
+        guild.previousSongs.shift();
+        guild.prevCalled = true;
 
-        connection.dispatcher.end();
+        guild.connection.dispatcher.end();
     } else {
-        message.channel.send('There are no previous songs');
+        guild.text.send('There are no previous songs');
     }
 
     return;
