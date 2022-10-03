@@ -23,6 +23,8 @@ module.exports = {
         if (command == 'play' || command == 'p') {
             if (!args.length) return message.reply('You need to add another argument bro');
 
+            let queue = serverMap.get(message.guild.id);
+
             let checkArg = ytdl.validateURL(args[0]);
 
             let video;
@@ -35,6 +37,7 @@ module.exports = {
 
             const playSong = async(guildId, song) => {
                 const server = serverMap.get(guildId);
+                server.currentSong = song;
 
                 if (!song) {
                     server.voice.leave();
@@ -48,7 +51,21 @@ module.exports = {
                     });
                     server.connection.play(stream, {seek: 0, volume: 1})
                         .on('finish', () => {
-                            server.voice.leave();
+                            server.songArray.shift();
+                            
+                            if(server.songArray.length == 0) {
+                                server.voice.leave();
+                                serverMap.delete(guildId);
+                            } else {
+                                server.prevSong = server.currentSong;
+                                server.previousSongs.unshift(server.prevSong);
+                                playSong(guildId, server.songArray[0]);
+
+                                if (server.prevCalled) {
+                                    server.previousSongs.shift()
+                                    server.prevCalled = false;
+                                }
+                            }
                         })
                 }
 
@@ -83,7 +100,7 @@ module.exports = {
                 }
             }
 
-            if (!serverMap.get(message.guild.id)) {
+            if (!queue) {
                 const songObj = {
                     voice: vc,
                     connection: 'not null or something',
@@ -108,7 +125,17 @@ module.exports = {
                 }
 
             } else {
-                // idk
+                queue.songArray.push(video);
+
+                const queueEmbed = new MessageEmbed()
+                    .setColor([2, 150, 255])
+                    .setAuthor(`Added ${video.title} to the queue 👍`)
+                    .setThumbnail(video.thumbnail)
+                    .setTimestamp()
+                    .setFooter(`${message.author.username}`, message.author.avatarURL({ dynamic:true }));
+
+                queue.text.send(queueEmbed);
+                return;
             }
         }
     }
