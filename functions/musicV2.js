@@ -3,11 +3,12 @@ const { youtube } = require('scrape-youtube');
 const { MessageEmbed } = require('discord.js');
 const stop = require('./music functions/stop');
 const skip = require('./music functions/skip');
+const queueFunc = require('./music functions/queue');
 
 const serverMap = new Map();
 
 module.exports = {
-    name: ['play', 'p', 'stop', 'leave', 'skip'],
+    name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q'],
     description: 'music thing',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -158,6 +159,16 @@ module.exports = {
             if (!guild) return message.reply('I\'m not even playing anything');
 
             skip(serverMap.get(message.guild.id));
+        }
+
+        if (command == 'queue' || command == 'q') {
+            let guild = serverMap.get(message.guild.id);
+
+            if (!vc) return message.reply('You gotta be in the voice channel fam');
+
+            if (!guild) return message.reply('Nothing\'s playing right meow');
+
+            queueFunc(serverMap.get(message.guild.id));
         }
     }
 }
