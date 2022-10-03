@@ -1,7 +1,7 @@
-module.exports = function skip(songObj, connection, message) {
-    if (songObj.songArray.length == 0) {
-        message.channel.send('There are no other songs to skip');
+module.exports = function skip(guild) {
+    if (guild.songArray.length == 0) {
+        guild.text.send('There are no other songs to skip');
     } else {
-        connection.dispatcher.end();
+        guild.connection.dispatcher.end();
     }
 }

@@ -2,11 +2,12 @@ const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 const { MessageEmbed } = require('discord.js');
 const stop = require('./music functions/stop');
+const skip = require('./music functions/skip');
 
 const serverMap = new Map();
 
 module.exports = {
-    name: ['play', 'p', 'stop', 'leave'],
+    name: ['play', 'p', 'stop', 'leave', 'skip'],
     description: 'music thing',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -38,6 +39,7 @@ module.exports = {
             const playSong = async(guildId, song) => {
                 const server = serverMap.get(guildId);
                 server.currentSong = song;
+                server.songArray.shift();
 
                 if (!song) {
                     server.voice.leave();
@@ -51,8 +53,6 @@ module.exports = {
                     });
                     server.connection.play(stream, {seek: 0, volume: 1})
                         .on('finish', () => {
-                            server.songArray.shift();
-                            
                             if(server.songArray.length == 0) {
                                 server.voice.leave();
                                 serverMap.delete(guildId);
@@ -148,6 +148,16 @@ module.exports = {
                 stop(guild);
                 serverMap.delete(message.guild.id);
             }
+        }
+
+        if (command == 'skip') {
+            let guild = serverMap.get(message.guild.id);
+
+            if (!vc) return message.reply('You gotta be in the voice channel fam');
+
+            if (!guild) return message.reply('I\'m not even playing anything');
+
+            skip(serverMap.get(message.guild.id));
         }
     }
 }
