@@ -5,11 +5,12 @@ const stop = require('./music functions/stop');
 const skip = require('./music functions/skip');
 const queueFunc = require('./music functions/queue');
 const previous = require('./music functions/previous');
+const remove = require('./music functions/remove');
 
 const serverMap = new Map();
 
 module.exports = {
-    name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q', 'previous', 'prev'],
+    name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q', 'previous', 'prev', 'remove'],
     description: 'music thing',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -188,6 +189,24 @@ module.exports = {
             if (!guild) return message.reply('Nothing\'s playing right meow');
 
             queueFunc(serverMap.get(message.guild.id));
+        }
+
+        if (command == 'remove') {
+            let guild = serverMap.get(message.guild.id);
+
+            if (!vc) return message.reply('You gotta be in the voice channel fam');
+
+            if (!guild) return message.reply('Nothing\'s playing right meow');
+
+            if (args.length == 0) return message.reply('You didn\'t send enough arguments for me to work with. Try also sending the number of the song you want me to remove.');
+
+            if(!Number.isInteger(parseInt(args[0]))) return message.reply('I need you to tell me the number of the song you want me to remove. So it should look like "#remove 1". Or if you don\'t know the number of the song in the queue that you want to remove say #queue.');
+
+            if (args.length > 1) return message.reply('I can only remove 1 song at the moment');
+
+            if (guild.songArray.length <= 0) return message.reply('There\'s nothing in the queue for me to remove');
+
+            remove(guild, parseInt(args[0]));
         }
     }
 }

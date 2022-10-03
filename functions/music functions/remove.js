@@ -1,10 +1,9 @@
-module.exports = function remove(songObj, message, arg) {
-    let songName = songObj.songArray[arg-1].title;
+module.exports = function remove(guild, arg) {
+    let songName = guild.songArray[arg-1].title;
 
-    songObj.songArray.splice(arg-1, 1);
+    guild.songArray.splice(arg-1, 1);
 
-    message.reply(`${songName} has been removed from the queue`);
+    guild.text.send(`${songName} has been removed from the queue`);
 
-    console.log(songObj.songArray);
     return;
 }
