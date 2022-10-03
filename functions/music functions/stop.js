@@ -9,9 +9,13 @@ const answerArr = [
     'https://tenor.com/bFH99.gif'
 ];
 
-module.exports = function stop(guild, message) {
-    guild.connection.dispatcher.end();
-    guild.text.send(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
+module.exports = async function stop(guild, command) {
+    guild.songArray = []
+    await guild.connection.dispatcher.end();
+
+    if (command == 'leave') return guild.text.send(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
+
+    guild.text.send(`Alright alright I'm stopping the music`);
     
     return;
 }

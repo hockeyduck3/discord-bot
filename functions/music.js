@@ -53,7 +53,7 @@ module.exports = {
                     serverMap.delete(guildId);
                     return;
                 } else {
-                    const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio', highWaterMark: 1<<25}).on('error', err => {
+                    const stream = ytdl(song.link, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}).on('error', err => {
                         console.log(err);
                         server.text.send('There was an error with that stream');
                         server.voice.leave();
@@ -156,7 +156,7 @@ module.exports = {
 
             guild.stopCalled = true;
 
-            stop(guild);
+            stop(guild, command);
 
             serverMap.delete(message.guild.id);
         }
