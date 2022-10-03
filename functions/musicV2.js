@@ -1,12 +1,12 @@
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 const { MessageEmbed } = require('discord.js');
-const { Console } = require('console');
+const stop = require('./music functions/stop');
 
 const serverMap = new Map();
 
 module.exports = {
-    name: ['play', 'p'],
+    name: ['play', 'p', 'stop', 'leave'],
     description: 'music thing',
     async execute(message, args) {
         const vc = message.member.voice.channel;
@@ -136,6 +136,17 @@ module.exports = {
 
                 queue.text.send(queueEmbed);
                 return;
+            }
+        }
+
+        if (command == 'stop' || command == 'leave') {
+            let guild = serverMap.get(message.guild.id);
+
+            if (!guild) {
+                message.reply(`I'm not even in the voice channel fool`);
+            } else {
+                stop(guild);
+                serverMap.delete(message.guild.id);
             }
         }
     }
