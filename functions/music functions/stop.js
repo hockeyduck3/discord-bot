@@ -9,18 +9,9 @@ const answerArr = [
     'https://tenor.com/bFH99.gif'
 ];
 
-module.exports = function stop(songObj, connection, message) {
-    if (!songObj.songPlaying) {
-        message.reply(`I'm not even in the voice channel fool`);
-    } else {
-        songObj.songPlaying = false;
-        songObj.songArray = [];
-        songObj.previousSongs = [];
-        songObj.currentSong = null;
-        songObj.prevSong = null;
-        connection.dispatcher.end();
-        message.channel.send(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
-    }
+module.exports = function stop(guild, message) {
+    guild.connection.dispatcher.end();
+    guild.text.send(`${answerArr[Math.floor(Math.random() * answerArr.length)]}`);
     
     return;
 }

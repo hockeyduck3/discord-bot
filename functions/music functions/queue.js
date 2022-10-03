@@ -3,32 +3,30 @@ const { MessageEmbed } = require('discord.js');
 let queueArr = [];
 let queueArrNum = 0;
 
-function makeQueue(songObj) {
-    if(songObj.currentSong != null) {
-        queueArr.push({name: '\u200B', value: `Current Song: [${songObj.currentSong.title}](${songObj.currentSong.link})`})
+function makeQueue(guild) {
+    if(guild.currentSong != null) {
+        queueArr.push({name: '\u200B', value: `Current Song: [${guild.currentSong.title}](${guild.currentSong.link})`})
     }
 
-    for (let i = 0; i < songObj.songArray.length; i++) {
+    for (let i = 0; i < guild.songArray.length; i++) {
         if (i != 10) {
-            queueArr.push({name: '\u200B', value: `${i+1}) [${songObj.songArray[i].title}](${songObj.songArray[i].link})`});
+            queueArr.push({name: '\u200B', value: `${i+1}) [${guild.songArray[i].title}](${guild.songArray[i].link})`});
         } else {
-            queueArrNum = songObj.songArray.length - 10;
+            queueArrNum = guild.songArray.length - 10;
             break;
         }
     }
 }
 
-module.exports = function queue(songObj, message) {
-    if (!songObj.songPlaying) return message.channel.send('Nothing\'s playing right meow');
+module.exports = function queue(guild) {
+    if (guild.songArray.length == 0 && guild.prevSong == null) return guild.text.send('There\'s currently nothing in your song history or in your song queue');
 
-    if (songObj.songArray.length == 0 && songObj.prevSong == null) return message.channel.send('There\'s currently nothing in your song history or in your song queue');
-
-    if (songObj.prevSong != null && songObj.prevSong != songObj.songArray[0]) {
-        queueArr.push({name: '\u200B', value: `Previous Song: [${songObj.prevSong.title}](${songObj.prevSong.link})`})
+    if (guild.prevSong != null && guild.prevSong != guild.songArray[0]) {
+        queueArr.push({name: '\u200B', value: `Previous Song: [${guild.prevSong.title}](${guild.prevSong.link})`})
     }
 
-    if (songObj.songArray.length != 0) {
-        makeQueue(songObj);
+    if (guild.songArray.length != 0) {
+        makeQueue(guild);
     }
 
     const embedMessage = {
@@ -55,6 +53,6 @@ module.exports = function queue(songObj, message) {
         
     const queueMessage = new MessageEmbed(embedMessage);
     
-    message.channel.send(queueMessage);
+    guild.text.send(queueMessage);
     queueArr = [];
 }
