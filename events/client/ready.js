@@ -1,3 +1,3 @@
 module.exports = () => {
-    console.log('Dev Online');
+    console.log('Tilly Online');
 }
