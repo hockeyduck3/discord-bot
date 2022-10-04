@@ -12,7 +12,7 @@ const serverMap = new Map();
 module.exports = {
     name: ['play', 'p', 'stop', 'leave', 'skip', 'queue', 'q', 'previous', 'prev', 'remove'],
     description: 'music thing',
-    async execute(message, args) {
+    async execute(bot, message, args) {
         const vc = message.member.voice.channel;
         const command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
 

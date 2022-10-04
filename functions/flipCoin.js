@@ -1,7 +1,7 @@
 module.exports = {
     name: 'flip',
     description: 'Flip a coin',
-    execute(message) {
+    execute(bot, message) {
         const num = Math.floor(Math.random() * 5);
 
         let result;

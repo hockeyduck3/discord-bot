@@ -8,7 +8,7 @@ const mathHelp = require('./help functions/mathHelp');
 module.exports = {
     name: ['tilly', 'hello', 'hi', 'help'],
     description: 'Send hello gifs',
-    execute(message, args) {
+    execute(bot, message, args) {
         let command = message.content.substring(1).trim().split(/ +/).shift().toLowerCase();
         let helpArg = args.join(' ').toLowerCase();
 

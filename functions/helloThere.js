@@ -1,7 +1,7 @@
 module.exports = {
     name: 'hellothere',
     description: 'Short little Star Wars Easter egg',
-    execute(message) {
+    execute(bot, message) {
         message.channel.send('https://media.giphy.com/media/8JTFsZmnTR1Rs1JFVP/giphy.gif');
     }
 }
