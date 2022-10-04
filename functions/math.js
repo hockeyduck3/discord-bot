@@ -1,7 +1,7 @@
 module.exports = {
     name: ['math', 'calc', 'm'],
     description: 'Do Common Math',
-    execute(message, args) {
+    execute(bot, message, args) {
         if (args.length === 0) {
             message.reply('You didn\'t add anything.');
             return;

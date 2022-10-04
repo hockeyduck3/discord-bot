@@ -3,7 +3,7 @@ const axios = require('axios');
 module.exports = {
     name: ['dad', 'dadjoke'],
     description: 'Send back a random dad joke',
-    execute(message) {
+    execute(bot, message) {
         axios({
             method: 'get',
             url: 'https://icanhazdadjoke.com/',
