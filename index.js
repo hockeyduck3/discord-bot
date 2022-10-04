@@ -13,3 +13,4 @@ bot.events = new Discord.Collection();
 })
 
 bot.login(process.env.token);
+
