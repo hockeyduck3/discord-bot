@@ -1,6 +1,6 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
-module.exports = function musicHelp(message) {
+module.exports = function musicHelp(interaction) {
     const answerArr = [
         '2 + 2 is 4',
         '1 + 1 is 2',
@@ -16,9 +16,11 @@ module.exports = function musicHelp(message) {
         'oof + skies is oofskies... I mean 1 + 2 is 3'
     ];
 
-    const mathMessage = new MessageEmbed()
+    const mathMessage = new EmbedBuilder()
         .setColor([255, 0, 5])
-        .setAuthor('Tilly Help Center')
+        .setAuthor({
+            name: 'Tilly Help Center'
+        })
         .setTitle('Math help')
         .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say something like #math or #calc or #m and then give me a problem to calculate.')
         .addFields(
@@ -26,7 +28,12 @@ module.exports = function musicHelp(message) {
             { name: 'Here is an example of my math skills!', value: `The answer to ${answerArr[Math.floor(Math.random() * answerArr.length)]}. Duh.` },
             { name: '\u200B', value: '\u200B' }
         )
-        .setFooter('I can do lots of basic math problems, and even some that you humans just can\'t comprehend! But there\'s also some stuff that even I don\'t understand so please go easy on me 🥺')
+        .setFooter({
+            text: 'I can do lots of basic math problems, and even some that you humans just can\'t comprehend! But there\'s also some stuff that even I don\'t understand so please go easy on me 🥺'
+        })
 
-        message.channel.send(mathMessage);
+        interaction.reply({
+            embeds: [mathMessage],
+            ephemeral: true
+        });
 }

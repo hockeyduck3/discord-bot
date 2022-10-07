@@ -1,9 +1,11 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
-module.exports = function musicHelp(message) {
-    const musicMessage = new MessageEmbed()
+module.exports = function musicHelp(interaction) {
+    const musicMessage = new EmbedBuilder()
         .setColor([255, 0, 5])
-        .setAuthor('Tilly Help Center')
+        .setAuthor({
+            name: 'Tilly Help Center'
+        })
         .setTitle('Music Service')
         .setDescription('I get it. You\'re just sitting there pwning noobs or something and you need some epic battle music. Well, don\'t worry, I can be your DJ! 😁 There are multiple commands for this function. You can take a look at some examples down below.')
         .addFields(
@@ -17,7 +19,12 @@ module.exports = function musicHelp(message) {
             { name: 'See the queue', value: 'Did you already forget what songs you put into the queue? Well I guess if you want I can show you what\'s coming up next. Just say #q or #queue and I will show you the last song I played, the song that I am currently playing, and since you asked nicely I will show you the next 10 songs. Sound good? 👍' },
             { name: '\u200B', value: '\u200B' }
         )
-        .setFooter('Just know that if I play a song you don\'t like, that\'s becasue you weren\'t specific enough 😊')
+        .setFooter({
+            text: 'Just know that if I play a song you don\'t like, that\'s becasue you weren\'t specific enough 😊'
+        })
 
-        message.channel.send(musicMessage);
+        interaction.reply({
+            embeds: [musicMessage],
+            ephemeral: true
+        })
 }

@@ -17,7 +17,6 @@ module.exports = {
 
             if (extra) extra.toLowerCase();
             
-
             if (extra == 'there') {
                 interaction.reply({
                     content: 'https://media.giphy.com/media/8JTFsZmnTR1Rs1JFVP/giphy.gif',
