@@ -2,7 +2,7 @@ module.exports = {
     name: 'interactionCreate',
     once: false,
     async execute(interaction) {
-        if(!interaction.isCommand()) return;
+        if(!interaction.isCommand() && !interaction.isButton()) return;
 
         const command = interaction.client.commands.get(interaction.commandName);
 
