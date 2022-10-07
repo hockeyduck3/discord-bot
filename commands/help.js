@@ -33,6 +33,7 @@ module.exports = {
                 if (funcAnswer == 'dad') return dadHelp(interaction);
 
                 if (funcAnswer == 'flip') return flipHelp(interaction);
+
             } else {
                 const helpMessage = new EmbedBuilder()
                 .setColor([255, 0, 5])
@@ -40,16 +41,16 @@ module.exports = {
                     name: 'Tilly Help Center'
                 })
                 .setTitle('Different Commands')
-                .setDescription('Below are different functions that I have in my kit! For help with a specfic function type in "#help (function name)"')
+                .setDescription('Below are different functions that I have in my kit! For help with a specfic function type in "/help (function name)"')
                 .addFields(
                     { name:'\u200B', value: '\u200B' },
-                    { name: 'Dad Jokes', value: 'Type in "#help dad" for info on my wonderfully dumb Dad Jokes! 🤣'},
+                    { name: 'Dad Jokes', value: 'Type "/help dad" for info on my wonderfully dumb Dad Jokes! 🤣', inline: true},
+                    // { name:'\u200B', value: '\u200B' },
+                    { name: 'Flip a coin', value: 'Type "/help flip" for info on my master coin flipping! 🪙', inline: true},
+                    // { name:'\u200B', value: '\u200B' },
+                    { name: 'Math', value: 'Type "/help math" for info on my amazing math skills! 🧮', inline: true},
                     { name:'\u200B', value: '\u200B' },
-                    { name: 'Flip a coin', value: 'Type in "#help flip" or "#help flipCoin" for info on my master coin flipping! 🪙'},
-                    { name:'\u200B', value: '\u200B' },
-                    { name: 'Math', value: 'Type in "#help math" for info on my amazing math skills! 🧮'},
-                    { name:'\u200B', value: '\u200B' },
-                    { name: 'Music', value: 'Type in "#help music" for more info on how I can be your server\'s personal DJ! 🎧'},
+                    { name: 'Music', value: 'Type "/help music" for more info on how I can be your server\'s personal DJ! 🎧', inline: true},
                 )
 
             interaction.reply({

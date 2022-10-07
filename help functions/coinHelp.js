@@ -17,7 +17,7 @@ module.exports = function coinHelp(interaction) {
             name: 'Tilly Help Center'
         })
         .setTitle('Flip a coin')
-        .setDescription('So this one is pretty much a no-brainer. Say you and your friends can\'t decide between game "A" or game "B", you guys go to look for a coin but you guys can\'t find any. Well have no fear! For I am here! Just type in "#flip" or "#flipCoin" and I\'ll tell you guys whether it was heads or tails 😁👉🪙')
+        .setDescription('So this one is pretty much a no-brainer. Say you and your friends can\'t decide between game "A" or game "B", you guys go to look for a coin but you guys can\'t find any. Well have no fear! For I am here! Just type in "/flip" and I\'ll tell you guys whether it was heads or tails 😁👉🪙')
         .addFields(
             { name:'\u200B', value: '\u200B' },
             { name: 'Here is an example of the Flip Coin function', value: `I just flipped a coin and it\'s ${result} `},

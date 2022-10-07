@@ -16,7 +16,7 @@ module.exports = function dadHelp(interaction) {
             name: 'Tilly Help Center'
         })
         .setTitle('Dad Jokes')
-        .setDescription('Ohhhh so you wanna hear a really bad dad joke? Well look no futher! For this function all you need to do is type in "#dad" or "dadJoke" and I\'ll tell you a dad joke! 😁')
+        .setDescription('Ohhhh so you wanna hear a really bad dad joke? Well look no futher! For this function all you need to do is type in "/dad" and I\'ll tell you a dad joke! 😁')
         .addFields(
             { name:'\u200B', value: '\u200B' },
             { name: 'Here is an example of the Dad Joke function', value: `${response.data.joke}`},
