@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const wait = require('node:timers/promises').setTimeout;
 
-const mathMap = new Map();
+let errorRecieved = false;
 
 let calc;
 
@@ -126,9 +127,10 @@ const topRow = new ActionRowBuilder()
     )
     .addComponents(
         new ButtonBuilder()
-            .setCustomId('%')
-            .setLabel('%')
+            .setCustomId('<')
+            .setLabel('<')
             .setStyle(ButtonStyle.Primary)
+            .setDisabled(true)
     )
     .addComponents(
         new ButtonBuilder()
@@ -144,6 +146,12 @@ module.exports = {
         .setDescription('Not fast at math? Don\'t worry, I can help with that 😎'),
 
         async execute(interaction) {
+            console.log(interaction.user.id)
+
+            // for (i of running) {
+            //     console.log(i = running[i]);
+            // }
+
             const collector = interaction.channel.createMessageComponentCollector();
 
             let screen = new EmbedBuilder()
@@ -153,46 +161,80 @@ module.exports = {
 
             collector.on('collect', async i => {
                 if (i.customId != '=') {
-                    if (calc != undefined) {
+
+                    if (i.customId == '<') {
+                        if (calc.length == 1) {
+                            calc = undefined;
+                            topRow.components[2].data.disabled = true;
+                            topRow.components[3].data.disabled = true;
+                            screen.setDescription('``` ```');
+                        } else {
+                            const newStr = calc.slice(0, -1);
+                        
+                            calc = newStr;
+
+                            screen.setDescription('```' + calc + '```');
+                        }
+                    } 
+                    
+                    else if (calc != undefined) {
                         calc = `${calc}${i.customId}`;
                         screen.setDescription('```' + calc + '```')
-                    } else {
+                    } 
+                    
+                    else {
                         calc = i.customId;
+                        topRow.components[2].data.disabled = false;
                         topRow.components[3].data.disabled = false;
                         screen.setDescription('```' + calc + '```')
                     }
 
+                    /([0-9][)(+\-\/*])/.test(calc) ? bottomRow.components[2].data.disabled = false : bottomRow.components[2].data.disabled = true;
+
                     if (i.customId == 'AC') {
                         calc = undefined;
+                        topRow.components[2].data.disabled = true;
                         topRow.components[3].data.disabled = true;
+                        bottomRow.components[2].data.disabled = true;
                         screen.setDescription('``` ```')
                     }
                 } else {
                     try {
                         const result = eval(calc);
+                        calc = result;
     
                         screen.setDescription('```' + result + '```');
 
+                        topRow.components[2].data.disabled = true;
                         bottomRow.components[2].data.disabled = true;
                     } catch (err) {
-                        console.log(err);
+                        errorRecieved = true;
                         screen.setDescription('```' + 'error' + '```');
                     }
                 }
 
+                await i.deferUpdate();
 
-                /([0-9][)(+\-\/x])/.test(calc) ? bottomRow.components[2].data.disabled = false : bottomRow.components[2].data.disabled = true;
-
-                i.deferUpdate();
-
-                interaction.editReply({
+                await interaction.editReply({
                     embeds: [screen],
                     components: [topRow, firstRow, secondRow, thirdRow, bottomRow],
                     ephemeral: true
-                })
+                });
+
+                if (errorRecieved) {
+                    await wait(2000);
+                    errorRecieved = false;
+                    screen.setDescription('```' + calc + '```');
+
+                    await interaction.editReply({
+                        embeds: [screen],
+                        components: [topRow, firstRow, secondRow, thirdRow, bottomRow],
+                        ephemeral: true
+                    });
+                }
             });
 
-            interaction.reply({
+            await interaction.reply({
                 embeds: [screen],
                 components: [topRow, firstRow, secondRow, thirdRow, bottomRow],
                 ephemeral: true
