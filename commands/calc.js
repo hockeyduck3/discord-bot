@@ -142,7 +142,7 @@ const topRow = new ActionRowBuilder()
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('math')
+        .setName('calc')
         .setDescription('Not fast at math? Don\'t worry, I can help with that 😎'),
 
         async execute(interaction) {
