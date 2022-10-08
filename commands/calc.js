@@ -146,12 +146,6 @@ module.exports = {
         .setDescription('Not fast at math? Don\'t worry, I can help with that 😎'),
 
         async execute(interaction) {
-            console.log(interaction.user.id)
-
-            // for (i of running) {
-            //     console.log(i = running[i]);
-            // }
-
             const collector = interaction.channel.createMessageComponentCollector();
 
             let screen = new EmbedBuilder()
