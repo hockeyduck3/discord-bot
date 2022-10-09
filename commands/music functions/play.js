@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { joinVoiceChannel } = require('@discordjs/voice')
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, getVoiceConnection, VoiceConnectionStatus  } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 
@@ -65,15 +65,30 @@ module.exports = {
                 serverMap.delete(guildId);
                 return;
             } else {
+                server.audioPlayer = createAudioPlayer();
+
                 const stream = ytdl(song.link, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}).on('error', err => {
                     console.log(err);
                     server.text.send('There was an error with that stream');
                     server.voice.leave();
                 });
-                server.connection.play(stream, {seek: 0, volume: 1})
-                    .on('finish', () => {
+
+                server.resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.Arbitrary });
+
+                server.audioPlayer.play(server.resource);
+
+                try {
+                    await entersState(server.connection, VoiceConnectionStatus.Ready, 30_000);
+                    server.connection.subscribe(server.audioPlayer);
+                } catch (err) {
+                    server.connection.destroy();
+                    throw err
+                }
+
+                server.resource.playStream
+                    .on('end', () => {
                         if (server.songArray.length == 0) {
-                            server.voice.leave();
+                            server.connection.destroy();
                             serverMap.delete(guildId);
                         } else {
                             server.prevSong = server.currentSong;
@@ -88,21 +103,21 @@ module.exports = {
                     })
             }
 
-            const nowPlaying = new MessageEmbed()
-                    .setColor([255, 0, 255])
-                    .setAuthor('Tilly Music Player')
-                    .addFields(
-                        { name: `Playing ${song.title}`, value: `${song.link}` },
-                        { name:'\u200B', value: '\u200B' },
-                    )
-                    .setThumbnail(song.thumbnail)
-                    .setTimestamp()
+            // const nowPlaying = new EmbedBuilder()
+            //         .setColor([255, 0, 255])
+            //         .setAuthor('Tilly Music Player')
+            //         .addFields(
+            //             { name: `Playing ${song.title}`, value: `${song.link}` },
+            //             { name:'\u200B', value: '\u200B' },
+            //         )
+            //         .setThumbnail(song.thumbnail)
+            //         .setTimestamp()
         
-            await server.text.send(nowPlaying);
+            await server.text.send(`Now Playing ${song.title}`);
         }
 
         if (checkArg) {
-            let info = await ytdl.getBasicInfo(args[0]);
+            let info = await ytdl.getBasicInfo(song);
 
             video = {
                 title: info.videoDetails.title,
@@ -123,6 +138,8 @@ module.exports = {
             const songObj = {
                 voice: vc,
                 connection: null,
+                audioPlayer: null,
+                resource: null,
                 text: interaction.channel,
                 currentSong: null,
                 songArray: [],
@@ -140,11 +157,15 @@ module.exports = {
             
 
             try {
-                songObj.connection = joinVoiceChannel({
-                    channelId: interaction.channel.id,
+                songObj.connection = await joinVoiceChannel({
+                    channelId: vc.id,
 	                guildId: interaction.guild.id,
 	                adapterCreator: interaction.guild.voiceAdapterCreator
                 })
+
+                const test = getVoiceConnection(interaction.guild.id);
+
+                console.log(test)
                 playSong(interaction.guild.id, songObj.songArray[0]);
             } catch (error) {
                 serverMap.delete(interaction.guild.id);
