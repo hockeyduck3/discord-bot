@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { joinVoiceChannel } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 
@@ -139,7 +140,11 @@ module.exports = {
             
 
             try {
-                songObj.connection = await interaction.member.voice.channel.join();
+                songObj.connection = joinVoiceChannel({
+                    channelId: interaction.channel.id,
+	                guildId: interaction.guild.id,
+	                adapterCreator: interaction.guild.voiceAdapterCreator
+                })
                 playSong(interaction.guild.id, songObj.songArray[0]);
             } catch (error) {
                 serverMap.delete(interaction.guild.id);

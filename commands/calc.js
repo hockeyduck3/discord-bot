@@ -194,7 +194,7 @@ module.exports = {
                     }
                 } else {
                     try {
-                        const result = eval(calc);
+                        const result = eval(parseInt(calc));
                         calc = result;
     
                         screen.setDescription('```' + result + '```');
@@ -204,6 +204,7 @@ module.exports = {
                     } catch (err) {
                         errorRecieved = true;
                         screen.setDescription('```' + 'error' + '```');
+                        console.log(err);
                     }
                 }
 
