@@ -4,8 +4,8 @@ const { queue } = require('./play');
 
 module.exports = {
     data: new SlashCommandBuilder()
-            .setName('skip')
-            .setDescription('Skip to the next song in the queue'),
+            .setName('previous')
+            .setDescription('Go back to the previous song'),
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
@@ -21,16 +21,22 @@ module.exports = {
             ephemeral: true
         });
 
-        const currentSong = server.currentSong;
+        if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
+            server.songArray.unshift(server.currentSong)
+            server.songArray.unshift(server.previousSongs[0]);
+            server.previousSongs.shift();
+            server.prevCalled = true;
 
-        if (server.songArray.length == 0) {
-            interaction.reply({
-                content: 'There are no other songs to skip',
-                ephemeral: true
-            });
-        } else {
+            interaction.deferReply();
+            interaction.deleteReply();
+            
             server.resource.playStream.end();
-            interaction.reply(`${currentSong.title} has been skipped ⏭️`);
+        } else {
+            interaction.reply({
+                content: 'You\'ve got no songs to go back to'
+            })
         }
+    
+        return;
     }
 }

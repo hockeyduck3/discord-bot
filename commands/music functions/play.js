@@ -6,6 +6,9 @@ const { youtube } = require('scrape-youtube');
 
 const serverMap = new Map();
 
+const nowPlayingEmoji = ['🎧', '🎶', '🎵', '🎸', '🎷', '🎺', '🔊', '🎤'];
+const queueEmoji = ['👍', '🤖', '👊', '👏', '🫶', '👌', '💪', '😎', '🫡', '😤', '👽', '▶️'];
+
 module.exports = {
     queue: serverMap,
     data: new SlashCommandBuilder()
@@ -107,14 +110,11 @@ module.exports = {
             const nowPlaying = new EmbedBuilder()
                     .setColor([255, 0, 255])
                     .setAuthor({
-                        name: 'Tilly Music Player'
+                        name: 'Tilly Music Player',
+                        iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
                     })
-                    .addFields(
-                        { name: `Playing ${song.title}`, value: `${song.link}` },
-                        { name:'\u200B', value: '\u200B' },
-                    )
+                    .setDescription(`Now playing [${song.title}](${song.link})   ${nowPlayingEmoji[Math.floor(Math.random() * nowPlayingEmoji.length)]}`)
                     .setThumbnail(song.thumbnail)
-                    .setTimestamp()
 
             await server.text.send({
                 embeds: [nowPlaying]
@@ -141,7 +141,6 @@ module.exports = {
 
         if (!queue){
             const songObj = {
-                voice: vc,
                 connection: null,
                 audioPlayer: null,
                 resource: null,
@@ -180,10 +179,11 @@ module.exports = {
             const queueEmbed = new EmbedBuilder()
                 .setColor([2, 150, 255])
                 .setAuthor({
-                    name: `Added ${video.title} to the queue 👍`
+                    name: 'Tilly Music Player',
+                    iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
                 })
+                .setDescription(`Title [${video.title}](${video.link}) has been added to the queue    ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
                 .setThumbnail(video.thumbnail)
-                .setTimestamp()
 
 
             interaction.reply({
