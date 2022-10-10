@@ -50,21 +50,23 @@ module.exports = {
             ephemeral: true
         });
 
-        if (server.prevSong != null && server.prevSong != server.songArray[0]) {
-            queueArr.push({name: '\u200B', value: `Previous Song: [${server.prevSong.title}](${server.prevSong.link})`})
+        if (server.prevSong != null && server.previousSongs[0] != server.songArray[0] && server.previousSongs.length != 0) {
+            queueArr.push({name: '\u200B', value: `Previous Song: [${server.previousSongs[0].title}](${server.previousSongs[0].link})`})
         }
 
         if (server.songArray.length != 0) {
             makeQueue(server);
+        } else {
+            queueArr.push({name: '\u200B', value: `Current Song: [${server.currentSong.title}](${server.currentSong.link})`})
         }
 
         const embedMessage = {
             color: 0x32ff96,
             author: {
                 name: 'Tilly Music Player: Song Queue',
+                iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
             },
-            fields: [],
-            timestamp: new Date().toISOString(),
+            fields: []
         };
 
         queueArr.forEach(e => {

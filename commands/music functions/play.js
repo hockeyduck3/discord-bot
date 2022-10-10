@@ -7,7 +7,7 @@ const { youtube } = require('scrape-youtube');
 const serverMap = new Map();
 
 const nowPlayingEmoji = ['🎧', '🎶', '🎵', '🎸', '🎷', '🎺', '🔊', '🎤'];
-const queueEmoji = ['👍', '🤖', '👊', '👏', '🫶', '👌', '💪', '😎', '🫡', '😤', '👽', '▶️'];
+const queueEmoji = ['👍', '🤖', '👊', '👏', '🫶', '👌', '💪', '😎', '🫡', '👽', '▶️'];
 
 module.exports = {
     queue: serverMap,
@@ -59,6 +59,12 @@ module.exports = {
 
             if (!server.stopCalled) {
                 server.currentSong = song;
+            } else {
+                try {
+                    nowPlayingText.delete();
+                } catch (err) {
+                    console.log(err);
+                }
             }
 
             server.songArray.shift();
@@ -90,11 +96,23 @@ module.exports = {
                 }
 
                 server.resource.playStream
-                    .on('end', () => {
+                    .on('end', async () => {
                         if (server.songArray.length == 0) {
+                            try {
+                                await nowPlayingText.delete();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            
                             server.connection.destroy();
                             serverMap.delete(guildId);
                         } else {
+                            try {
+                                nowPlayingText.delete();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
                             playSong(guildId, server.songArray[0]);
@@ -116,7 +134,7 @@ module.exports = {
                     .setDescription(`Now playing [${song.title}](${song.link})   ${nowPlayingEmoji[Math.floor(Math.random() * nowPlayingEmoji.length)]}`)
                     .setThumbnail(song.thumbnail)
 
-            await server.text.send({
+            let nowPlayingText = await server.text.send({
                 embeds: [nowPlaying]
             });
         }
