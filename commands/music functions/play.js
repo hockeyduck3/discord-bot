@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, getVoiceConnection, VoiceConnectionStatus  } = require('@discordjs/voice')
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus  } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 
@@ -22,10 +22,10 @@ module.exports = {
         const vc = interaction.member.voice.channel;
         const song = interaction.options.getString('song');
 
-        // if (!vc) return interaction.reply({
-        //     content: 'You gotta be in a voice channel',
-        //     ephemeral: true
-        // });
+        if (!vc) return interaction.reply({
+            content: 'You gotta be in a voice channel',
+            ephemeral: true
+        });
 
         const user = interaction.member;
 
@@ -67,10 +67,11 @@ module.exports = {
             } else {
                 server.audioPlayer = createAudioPlayer();
 
-                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}).on('error', err => {
+                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio', highWaterMark: 1<<25}).on('error', err => {
                     console.log(err);
                     server.text.send('There was an error with that stream');
-                    server.voice.leave();
+                    server.connection.destroy();
+                    serverMap.delete(guildId);
                 });
 
                 server.resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.Arbitrary });
@@ -103,17 +104,21 @@ module.exports = {
                     })
             }
 
-            // const nowPlaying = new EmbedBuilder()
-            //         .setColor([255, 0, 255])
-            //         .setAuthor('Tilly Music Player')
-            //         .addFields(
-            //             { name: `Playing ${song.title}`, value: `${song.link}` },
-            //             { name:'\u200B', value: '\u200B' },
-            //         )
-            //         .setThumbnail(song.thumbnail)
-            //         .setTimestamp()
-        
-            await server.text.send(`Now Playing ${song.title}`);
+            const nowPlaying = new EmbedBuilder()
+                    .setColor([255, 0, 255])
+                    .setAuthor({
+                        name: 'Tilly Music Player'
+                    })
+                    .addFields(
+                        { name: `Playing ${song.title}`, value: `${song.link}` },
+                        { name:'\u200B', value: '\u200B' },
+                    )
+                    .setThumbnail(song.thumbnail)
+                    .setTimestamp()
+
+            await server.text.send({
+                embeds: [nowPlaying]
+            });
         }
 
         if (checkArg) {
@@ -152,9 +157,10 @@ module.exports = {
             serverMap.set(interaction.guild.id, songObj);
             songObj.songArray.push(video);
 
-            await interaction.deferReply()
-            await interaction.deleteReply()
-            
+            await interaction.deferReply();
+            await interaction.deleteReply();
+
+            console.log(interaction.member);
 
             try {
                 songObj.connection = await joinVoiceChannel({
@@ -163,10 +169,8 @@ module.exports = {
 	                adapterCreator: interaction.guild.voiceAdapterCreator
                 })
 
-                const test = getVoiceConnection(interaction.guild.id);
-
-                console.log(test)
                 playSong(interaction.guild.id, songObj.songArray[0]);
+
             } catch (error) {
                 serverMap.delete(interaction.guild.id);
                 await interaction.channel.send('Had trouble joining the voice channel');
@@ -175,14 +179,16 @@ module.exports = {
         } else {
             queue.songArray.push(video);
 
-            const queueEmbed = new MessageEmbed()
+            const queueEmbed = new EmbedBuilder()
                 .setColor([2, 150, 255])
-                .setAuthor(`Added ${video.title} to the queue 👍`)
+                .setAuthor({
+                    name: `Added ${video.title} to the queue 👍`
+                })
                 .setThumbnail(video.thumbnail)
                 .setTimestamp()
-                .setFooter(`${interaction.author.username}`, interaction.author.avatarURL({ dynamic:true }));
 
-            queue.text.send({
+
+            interaction.reply({
                 embeds: [queueEmbed]
             });
             return;

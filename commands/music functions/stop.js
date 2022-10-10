@@ -8,10 +8,17 @@ module.exports = {
             .setDescription('stop a playing song'),
 
     async execute (interaction) {
-        interaction.reply('stop hit')
+        let server = queue.get(interaction.guild.id);
 
-        let test = queue.get(interaction.guild.id)
+        if (!server) return interaction.reply({
+            content: 'Nothing\'s playing right meow',
+            ephemeral: true
+        });
 
-        console.log(test)
+        server.connection.destroy();
+
+        interaction.reply('Alright alright I\'m stopping the music');
+
+        queue.delete(interaction.guild.id);
     }
 }
