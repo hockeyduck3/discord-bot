@@ -160,8 +160,6 @@ module.exports = {
             await interaction.deferReply();
             await interaction.deleteReply();
 
-            console.log(interaction.member);
-
             try {
                 songObj.connection = await joinVoiceChannel({
                     channelId: vc.id,
