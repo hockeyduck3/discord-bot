@@ -21,8 +21,14 @@ module.exports = {
             ephemeral: true
         });
 
+        if (server.audioStatus == 'playing') return interaction.reply({
+            content: 'Nothing is paused right meow',
+            ephemeral: true
+        })
+
         const currentSong = server.currentSong.title;
 
+        server.audioStatus = 'playing';
         server.audioPlayer.unpause();
 
         interaction.reply(`▶️ Resuming ${currentSong}`);

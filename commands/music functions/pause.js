@@ -21,8 +21,15 @@ module.exports = {
             ephemeral: true
         });
 
+        if (server.audioStatus == 'paused') return interaction.reply({
+            content: 'The music is already paused',
+            ephemeral: true
+        });
+
+
         const currentSong = server.currentSong.title;
 
+        server.audioStatus = 'paused';
         server.audioPlayer.pause();
 
         interaction.reply(`⏸️ Paused ${currentSong}`);

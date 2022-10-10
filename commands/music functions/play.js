@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus  } = require('@discordjs/voice')
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 
@@ -56,16 +56,8 @@ module.exports = {
 
         const playSong = async(guildId, song) => {
             const server = serverMap.get(guildId);
-
-            if (!server.stopCalled) {
-                server.currentSong = song;
-            } else {
-                try {
-                    nowPlayingText.delete();
-                } catch (err) {
-                    console.log(err);
-                }
-            }
+            
+            server.currentSong = song;
 
             server.songArray.shift();
 
@@ -86,6 +78,7 @@ module.exports = {
                 server.resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.Arbitrary });
 
                 server.audioPlayer.play(server.resource);
+                server.audioStatus = 'playing';
 
                 try {
                     await entersState(server.connection, VoiceConnectionStatus.Ready, 30_000);
@@ -159,6 +152,7 @@ module.exports = {
 
         if (!queue){
             const songObj = {
+                audioStatus: null,
                 connection: null,
                 audioPlayer: null,
                 resource: null,
@@ -167,8 +161,7 @@ module.exports = {
                 songArray: [],
                 previousSongs: [],
                 prevSong: null,
-                prevCalled: false,
-                stopCalled: false
+                prevCalled: false
             };
 
             serverMap.set(interaction.guild.id, songObj);
