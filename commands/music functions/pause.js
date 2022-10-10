@@ -4,8 +4,8 @@ const { queue } = require('./play');
 
 module.exports = {
     data: new SlashCommandBuilder()
-            .setName('skip')
-            .setDescription('Skip to the next song in the queue'),
+            .setName('pause')
+            .setDescription('Pause the current playing song'),
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
@@ -23,14 +23,8 @@ module.exports = {
 
         const currentSong = server.currentSong.title;
 
-        if (server.songArray.length == 0) {
-            interaction.reply({
-                content: 'There are no other songs to skip',
-                ephemeral: true
-            });
-        } else {
-            server.resource.playStream.end();
-            interaction.reply(`${currentSong} has been skipped ⏭️`);
-        }
+        server.audioPlayer.pause();
+
+        interaction.reply(`⏸️ Paused ${currentSong}`);
     }
 }
