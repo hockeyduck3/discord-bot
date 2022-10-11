@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const dadHelp = require('../help functions/dadHelp');
 const flipHelp = require('../help functions/coinHelp');
 const musicHelp = require('../help functions/musicHelp');
-const mathHelp = require('../help functions/mathHelp');
+const calcHelp = require('../help functions/calcHelp');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,7 +14,7 @@ module.exports = {
                 .setDescription('Need help with a specific function?')
                 .addChoices(
                     { name: 'music', value: 'music' },
-				    { name: 'math', value: 'math' },
+				    { name: 'calc', value: 'calc' },
 				    { name: 'dad', value: 'dad' },
                     { name: 'flip', value: 'flip' }
                 )
@@ -28,7 +28,7 @@ module.exports = {
 
                 if (funcAnswer == 'music') return musicHelp(interaction);
                 
-                if (funcAnswer == 'math') return mathHelp(interaction);
+                if (funcAnswer == 'calc') return calcHelp(interaction);
 
                 if (funcAnswer == 'dad') return dadHelp(interaction);
 
@@ -45,12 +45,13 @@ module.exports = {
                 .addFields(
                     { name:'\u200B', value: '\u200B' },
                     { name: 'Dad Jokes', value: 'Type "/help dad" for info on my wonderfully dumb Dad Jokes! 🤣', inline: true},
-                    // { name:'\u200B', value: '\u200B' },
                     { name: 'Flip a coin', value: 'Type "/help flip" for info on my master coin flipping! 🪙', inline: true},
-                    // { name:'\u200B', value: '\u200B' },
-                    { name: 'Math', value: 'Type "/help math" for info on my amazing math skills! 🧮', inline: true},
+                    { name: 'Calculator', value: 'Type "/help calc" for info on my built in calculator! 🧮', inline: true},
                     { name:'\u200B', value: '\u200B' },
                     { name: 'Music', value: 'Type "/help music" for more info on how I can be your server\'s personal DJ! 🎧', inline: true},
+                    { name: 'Length Conversion', value: 'Coming soon', inline: true },
+                    { name: 'Google it', value: 'Coming soon', inline: true }
+
                 )
 
             interaction.reply({

@@ -21,15 +21,15 @@ module.exports = function musicHelp(interaction) {
         .setAuthor({
             name: 'Tilly Help Center'
         })
-        .setTitle('Math help')
-        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you wanna ask me a math question you just gotta say "/math" and then give me a problem to calculate.')
+        .setTitle('Calc help')
+        .setDescription('So you thought that just because I\'m some kind of AI that I could do math!? Well you would be right. I am a computer after all. If you want to I can give you a calculator to do some basic math on. Just say /calc and I\'ll pull it up for you. 👩‍🔬🧮')
         .addFields(
             { name: '\u200B', value: '\u200B' },
             { name: 'Here is an example of my math skills!', value: `The answer to ${answerArr[Math.floor(Math.random() * answerArr.length)]}. Duh.` },
             { name: '\u200B', value: '\u200B' }
         )
         .setFooter({
-            text: 'I can do lots of basic math problems, and even some that you humans just can\'t comprehend! But there\'s also some stuff that even I don\'t understand so please go easy on me 🥺'
+            text: 'My calculator is very basic and can\'t do supper advanced math. Sorry, I\'m still a work in progress. 🥺'
         })
 
         interaction.reply({
