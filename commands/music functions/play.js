@@ -215,6 +215,8 @@ module.exports = {
         function leaveTimer(server, guildId) {
             setTimeout(() => {
                 if (server.audioStatus == 'stopped') {
+                    server.text.send('Looks like there haven\'t been anymore song requests in a minute, so I\'m gonna head out. ✌️')
+
                     server.connection.destroy();
                     serverMap.delete(guildId);
                 } else {
