@@ -1,0 +1,42 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
+const { queue } = require('./play');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+            .setName('previous')
+            .setDescription('Go back to the previous song'),
+
+    async execute(interaction) {
+        const vc = interaction.member.voice.channel;
+        let server = queue.get(interaction.guild.id);
+
+        if (!vc) return interaction.reply({
+            content: 'You gotta be in a voice channel',
+            ephemeral: true
+        });
+
+        if (!server) return interaction.reply({
+            content: 'Nothing\'s playing right meow',
+            ephemeral: true
+        });
+
+        if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
+            server.songArray.unshift(server.currentSong)
+            server.songArray.unshift(server.previousSongs[0]);
+            server.previousSongs.shift();
+            server.prevCalled = true;
+
+            interaction.deferReply();
+            interaction.deleteReply();
+            
+            server.resource.playStream.end();
+        } else {
+            interaction.reply({
+                content: 'You\'ve got no songs to go back to'
+            })
+        }
+    
+        return;
+    }
+}
