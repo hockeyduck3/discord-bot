@@ -96,9 +96,10 @@ module.exports = {
                             } catch (err) {
                                 console.log(err);
                             }
-                            
-                            server.connection.destroy();
-                            serverMap.delete(guildId);
+
+                            server.audioStatus = 'stopped';
+
+                            leaveTimer(server, guildId);
                         } else {
                             try {
                                 nowPlayingText.delete();
@@ -184,6 +185,14 @@ module.exports = {
                 await interaction.channel.send('Had trouble joining the voice channel');
                 throw error;
             }
+        } else if (queue.audioStatus == 'stopped') {
+            queue.songArray.push(video);
+
+            playSong(interaction.guild.id, queue.songArray[0]);
+
+            await interaction.deferReply();
+            await interaction.deleteReply();
+
         } else {
             queue.songArray.push(video);
 
@@ -202,5 +211,16 @@ module.exports = {
             });
             return;
         }
-    }
+
+        function leaveTimer(server, guildId) {
+            setTimeout(() => {
+                if (server.audioStatus == 'stopped') {
+                    server.connection.destroy();
+                    serverMap.delete(guildId);
+                } else {
+                    return;
+                }
+            }, 60000);
+        }
+    }  
 }
