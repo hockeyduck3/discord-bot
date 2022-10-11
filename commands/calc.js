@@ -240,12 +240,16 @@ module.exports = {
 
             function timeout(interaction) {
                 setTimeout(() => {
-                    interaction.editReply({
-                        content: 'Calculator has timed out, to use the calculator again please type /calc',
-                        embeds: [],
-                        components: [],
-                        ephemeral: true
-                    })
+                    try {
+                        interaction.editReply({
+                            content: 'Calculator has timed out, to use the calculator again please type /calc',
+                            embeds: [],
+                            components: [],
+                            ephemeral: true
+                        })
+                    } catch (err) {
+                        console.log(err)
+                    }
                 }, 600000);
             }
         }

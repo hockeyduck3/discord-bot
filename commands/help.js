@@ -49,7 +49,7 @@ module.exports = {
                     { name: 'Calculator', value: 'Type "/help calc" for info on my built in calculator! 🧮', inline: true},
                     { name:'\u200B', value: '\u200B' },
                     { name: 'Music', value: 'Type "/help music" for more info on how I can be your server\'s personal DJ! 🎧', inline: true},
-                    { name: 'Length Conversion', value: 'Coming soon', inline: true },
+                    { name: 'Conversion', value: 'Type /conversion for more info on my supercalifragilisticexpialidocious conversion skills! 📏', inline: true },
                     { name: 'Google it', value: 'Coming soon', inline: true }
 
                 )
