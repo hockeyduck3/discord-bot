@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { evaluate } = require('mathjs');
 const wait = require('node:timers/promises').setTimeout;
 
 let errorRecieved = false;
@@ -118,14 +119,12 @@ const topRow = new ActionRowBuilder()
             .setCustomId('(')
             .setLabel('(')
             .setStyle(ButtonStyle.Primary)
-            .setDisabled(true)
     )
     .addComponents(
         new ButtonBuilder()
             .setCustomId(')')
             .setLabel(')')
             .setStyle(ButtonStyle.Primary)
-            .setDisabled(true)
     )
     .addComponents(
         new ButtonBuilder()
@@ -196,7 +195,7 @@ module.exports = {
                     }
                 } else {
                     try {
-                        const result = eval(parseInt(calc));
+                        const result = evaluate(calc);
                         calc = result;
     
                         screen.setDescription('```' + result + '```');
@@ -236,5 +235,18 @@ module.exports = {
                 components: [topRow, firstRow, secondRow, thirdRow, bottomRow],
                 ephemeral: true
             })
+
+            timeout(interaction);
+
+            function timeout(interaction) {
+                setTimeout(() => {
+                    interaction.editReply({
+                        content: 'Calculator has timed out, to use the calculator again please type /calc',
+                        embeds: [],
+                        components: [],
+                        ephemeral: true
+                    })
+                }, 600000);
+            }
         }
 }
