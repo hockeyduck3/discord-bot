@@ -8,7 +8,7 @@ module.exports = {
     execute (bot, commands) {
         const rest = new REST({
             version: '10'
-        }).setToken(process.env.devToken);
+        }).setToken(process.env.token);
 
         (async () => {
             try {
