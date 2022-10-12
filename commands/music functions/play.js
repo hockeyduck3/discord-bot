@@ -3,6 +3,7 @@ const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
+const playlist = require('youtube-sr').default;
 
 const serverMap = new Map();
 
@@ -19,7 +20,6 @@ module.exports = {
                     .setDescription('Give me a song name or a Youtube link to play')
                     .setRequired(true)    
             ),
-        
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
@@ -44,9 +44,16 @@ module.exports = {
 
         let queue = serverMap.get(interaction.guild.id);
 
-        let checkArg = ytdl.validateURL(song);
+        let checkArg;
+
+        if (song.includes('playlist?')) {
+            checkArg = 'playlist';
+        } else {
+            checkArg = ytdl.validateURL(song);
+        }
 
         let video;
+        let playlistArr = [];
 
         const findVideo = async (query) => {
             const result = await youtube.search(query);
@@ -62,7 +69,7 @@ module.exports = {
             server.songArray.shift();
 
             if (!song) {
-                server.voice.leave();
+                server.connection.destroy();
                 serverMap.delete(guildId);
                 return;
             } else {
@@ -133,8 +140,34 @@ module.exports = {
             });
         }
 
-        if (checkArg) {
+        if (checkArg == 'playlist') {
+            await playlist.getPlaylist(song, {fetchAll: true})
+            .then(vid => {
+                if (vid != null) {
+                    for (let i = 0; i < vid.videos.length; i++) {
+                        video = {
+                            title: vid.videos[i].title,
+                            thumbnail: vid.videos[i].thumbnail.url,
+                            link: `https://www.youtube.com/watch?v=${vid.videos[i].id}`
+                        }
+    
+                        playlistArr.push(video);
+                    }
+                } else {
+                    return interaction.reply({
+                        content: 'Looks like that playlist is set to private. Please make sure it\'s either public or unlisted',
+                        ephemeral: true
+                    });                    
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
+
+        } else if (checkArg) {
             let info = await ytdl.getBasicInfo(song);
+
+            console.log(info);
 
             video = {
                 title: info.videoDetails.title,
@@ -166,8 +199,13 @@ module.exports = {
             };
 
             serverMap.set(interaction.guild.id, songObj);
-            songObj.songArray.push(video);
+            if (checkArg != 'playlist') {
+                songObj.songArray.push(video);
+            } else {
+                playlistArr.forEach(vid => songObj.songArray.push(vid));
+            }
 
+            playlistArr = [];
             await interaction.deferReply();
             await interaction.deleteReply();
 
@@ -194,22 +232,42 @@ module.exports = {
             await interaction.deleteReply();
 
         } else {
-            queue.songArray.push(video);
+            if (checkArg != 'playlist') {
+                queue.songArray.push(video);
 
-            const queueEmbed = new EmbedBuilder()
-                .setColor([2, 150, 255])
-                .setAuthor({
-                    name: 'Tilly Music Player',
-                    iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
-                })
-                .setDescription(`Title [${video.title}](${video.link}) has been added to the queue    ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
-                .setThumbnail(video.thumbnail)
+                const queueEmbed = new EmbedBuilder()
+                    .setColor([2, 150, 255])
+                    .setAuthor({
+                        name: 'Tilly Music Player',
+                        iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
+                    })
+                    .setDescription(`Title [${video.title}](${video.link}) has been added to the queue    ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
+                    .setThumbnail(video.thumbnail)
 
 
-            interaction.reply({
-                embeds: [queueEmbed]
-            });
-            return;
+                interaction.reply({
+                    embeds: [queueEmbed]
+                });
+                
+                return;
+            } else {
+                playlistArr.forEach(vid => queue.songArray.push(vid));
+
+                const queueEmbed = new EmbedBuilder()
+                    .setColor([2, 150, 255])
+                    .setAuthor({
+                        name: 'Tilly Music Player',
+                        iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
+                    })
+                    .setDescription(`${playlistArr.length} songs have been added to the queue ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
+
+                playlistArr = [];
+
+                interaction.reply({
+                    embeds: [queueEmbed]
+                });
+                return;
+            }
         }
 
         function leaveTimer(server, guildId) {
