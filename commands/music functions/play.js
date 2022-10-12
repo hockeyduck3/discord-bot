@@ -232,7 +232,7 @@ module.exports = {
                 } else {
                     return;
                 }
-            }, 60000);
+            }, 180000);
         }
     }  
 }

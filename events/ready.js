@@ -2,17 +2,19 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 require('dotenv').config();
 
+const token = (!process.env.devMode ? process.env.token : process.env.devToken);
+
 module.exports = {
     name: 'ready',
     once: true,
     execute (bot, commands) {
         const rest = new REST({
             version: '10'
-        }).setToken(process.env.token);
+        }).setToken(token);
 
         (async () => {
             try {
-                if (process.env.guildOnly == 'false') {
+                if (!process.env.devMode) {
                     await rest.put(Routes.applicationCommands(process.env.clientId), {
                         body: commands
                     });
@@ -32,6 +34,6 @@ module.exports = {
             }
         })();
 
-        console.log('Dev ready and online');
+        console.log((!process.env.devMode ? 'Tilly Online and ready to go!' : 'Dev Mode online and ready to test!'));
     }
 }
