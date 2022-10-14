@@ -54,6 +54,7 @@ module.exports = {
 
         let video;
         let playlistArr = [];
+        let reply = false;
 
         const findVideo = async (query) => {
             const result = await youtube.search(query);
@@ -97,7 +98,26 @@ module.exports = {
 
                 server.resource.playStream
                     .on('end', async () => {
-                        if (server.songArray.length == 0) {
+                        if (server.songArray.length == 0 && server.loop == true) {
+                            if (server.previousSongs.length != 0) {
+                                server.prevSong = server.currentSong;
+                                server.previousSongs.push(server.prevSong);
+                                server.songArray = [...server.previousSongs];
+                            } else {
+                                server.songArray.push(server.currentSong);
+                            }
+
+                            server.previousSongs = [];
+
+                            try {
+                                nowPlayingText.delete();
+                            } catch (err) {
+                                console.log(err);
+                            }
+
+                            playSong(guildId, server.songArray[0]);
+
+                        } else if (server.songArray.length == 0) {
                             try {
                                 await nowPlayingText.delete();
                             } catch (err) {
@@ -108,11 +128,7 @@ module.exports = {
 
                             leaveTimer(server, guildId);
                         } else {
-                            try {
-                                nowPlayingText.delete();
-                            } catch (err) {
-                                console.log(err);
-                            }
+                            
                             
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
@@ -154,10 +170,11 @@ module.exports = {
                         playlistArr.push(video);
                     }
                 } else {
-                    return interaction.reply({
+                    interaction.reply({
                         content: 'Looks like that playlist is set to private. Please make sure it\'s either public or unlisted',
                         ephemeral: true
-                    });                    
+                    });  
+                    reply = true;
                 }
             })
             .catch(err => {
@@ -166,8 +183,6 @@ module.exports = {
 
         } else if (checkArg) {
             let info = await ytdl.getBasicInfo(song);
-
-            console.log(info);
 
             video = {
                 title: info.videoDetails.title,
@@ -195,7 +210,8 @@ module.exports = {
                 songArray: [],
                 previousSongs: [],
                 prevSong: null,
-                prevCalled: false
+                prevCalled: false,
+                loop: false
             };
 
             serverMap.set(interaction.guild.id, songObj);
@@ -248,31 +264,37 @@ module.exports = {
                 interaction.reply({
                     embeds: [queueEmbed]
                 });
-                
+
                 return;
             } else {
-                playlistArr.forEach(vid => queue.songArray.push(vid));
+                if (!reply) {
+                    playlistArr.forEach(vid => queue.songArray.push(vid));
 
-                const queueEmbed = new EmbedBuilder()
-                    .setColor([2, 150, 255])
-                    .setAuthor({
-                        name: 'Tilly Music Player',
-                        iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
-                    })
-                    .setDescription(`${playlistArr.length} songs have been added to the queue ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
+                    const queueEmbed = new EmbedBuilder()
+                        .setColor([2, 150, 255])
+                        .setAuthor({
+                            name: 'Tilly Music Player',
+                            iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
+                        })
+                        .setDescription(`${playlistArr.length} songs have been added to the queue ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
 
-                playlistArr = [];
+                    playlistArr = [];
 
-                interaction.reply({
-                    embeds: [queueEmbed]
-                });
-                return;
+                    interaction.reply({
+                        embeds: [queueEmbed]
+                    });
+                    return;
+                }
             }
         }
 
         function leaveTimer(server, guildId) {
             setTimeout(() => {
-                if (server.audioStatus == 'stopped') {
+                if (!server) {
+                    return;
+
+                } else if (server.audioStatus == 'stopped') {
+
                     const leaveEmbed = new EmbedBuilder()
                             .setColor([2, 12, 25])
                             .setAuthor({
@@ -287,6 +309,7 @@ module.exports = {
 
                     server.connection.destroy();
                     serverMap.delete(guildId);
+
                 } else {
                     return;
                 }

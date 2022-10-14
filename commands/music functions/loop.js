@@ -4,8 +4,8 @@ const { queue } = require('./play');
 
 module.exports = {
     data: new SlashCommandBuilder()
-            .setName('previous')
-            .setDescription('Go back to the previous song'),
+            .setName('loop')
+            .setDescription('Set the current music queue to just keep looping'),
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
@@ -21,23 +21,19 @@ module.exports = {
             ephemeral: true
         });
 
-        if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
-            server.songArray.unshift(server.currentSong)
-            server.songArray.unshift(server.previousSongs[0]);
-            server.previousSongs.shift();
-            server.prevCalled = true;
+        if (!server.loop) {
+            server.loop = true;
 
-            interaction.deferReply();
-            interaction.deleteReply();
-            
-            server.resource.playStream.end();
-        } else {
             interaction.reply({
-                content: 'You\'ve got no songs to go back to',
-                ephemeral: true
+                content: 'The queue has been set to loop ✌️'
+            });
+
+        } else {
+            server.loop = false;
+
+            interaction.reply({
+                content: 'The queue is no longer looping'
             })
         }
-    
-        return;
     }
 }
