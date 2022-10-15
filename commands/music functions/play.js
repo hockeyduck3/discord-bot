@@ -98,26 +98,7 @@ module.exports = {
 
                 server.resource.playStream
                     .on('end', async () => {
-                        if (server.songArray.length == 0 && server.loop == true) {
-                            if (server.previousSongs.length != 0) {
-                                server.prevSong = server.currentSong;
-                                server.previousSongs.push(server.prevSong);
-                                server.songArray = [...server.previousSongs];
-                            } else {
-                                server.songArray.push(server.currentSong);
-                            }
-
-                            server.previousSongs = [];
-
-                            try {
-                                nowPlayingText.delete();
-                            } catch (err) {
-                                console.log(err);
-                            }
-
-                            playSong(guildId, server.songArray[0]);
-
-                        } else if (server.songArray.length == 0) {
+                        if (server.songArray.length == 0) {
                             try {
                                 await nowPlayingText.delete();
                             } catch (err) {
@@ -128,10 +109,13 @@ module.exports = {
 
                             leaveTimer(server, guildId);
                         } else {
-                            
-                            
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
+
+                            if (server.loop) {
+                                server.songArray.push(prevSong);
+                            }
+
                             playSong(guildId, server.songArray[0]);
 
                             if (server.prevCalled) {

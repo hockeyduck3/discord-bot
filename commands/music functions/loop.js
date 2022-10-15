@@ -22,6 +22,14 @@ module.exports = {
         });
 
         if (!server.loop) {
+            if (server.previousSongs.length != 0) {
+                const reverseArr = [...server.previousSongs]
+
+                reverseArr.reverse();
+
+                reverseArr.forEach(song => server.songArray.push(song));
+            }
+
             server.loop = true;
 
             interaction.reply({
