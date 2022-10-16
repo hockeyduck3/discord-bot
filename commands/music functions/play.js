@@ -99,21 +99,20 @@ module.exports = {
                 server.resource.playStream
                     .on('end', async () => {
                         if (server.songArray.length == 0) {
-                            try {
-                                await nowPlayingText.delete();
-                            } catch (err) {
-                                console.log(err);
-                            }
+                            deleteNowPlaying(server);
 
                             server.audioStatus = 'stopped';
 
                             leaveTimer(server, guildId);
                         } else {
+                            deleteNowPlaying(server);
+
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
 
                             if (server.loop) {
-                                server.songArray.push(prevSong);
+                                server.songArray.push(server.prevSong);
+                                server.previousSongs.pop();
                             }
 
                             playSong(guildId, server.songArray[0]);
@@ -135,7 +134,7 @@ module.exports = {
                     .setDescription(`Now playing [${song.title}](${song.link})   ${nowPlayingEmoji[Math.floor(Math.random() * nowPlayingEmoji.length)]}`)
                     .setThumbnail(song.thumbnail)
 
-            let nowPlayingText = await server.text.send({
+            server.nowPlaying = await server.text.send({
                 embeds: [nowPlaying]
             });
         }
@@ -191,6 +190,7 @@ module.exports = {
                 resource: null,
                 text: interaction.channel,
                 currentSong: null,
+                nowPlaying: null,
                 songArray: [],
                 previousSongs: [],
                 prevSong: null,
@@ -276,8 +276,9 @@ module.exports = {
             setTimeout(() => {
                 if (!server) {
                     return;
-
-                } else if (server.audioStatus == 'stopped') {
+                } 
+                
+                else if (server.audioStatus == 'stopped') {
 
                     const leaveEmbed = new EmbedBuilder()
                             .setColor([2, 12, 25])
@@ -299,5 +300,14 @@ module.exports = {
                 }
             }, 180000);
         }
+
+        const deleteNowPlaying = async (server) => {
+            try {
+                await server.nowPlaying.delete()
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
     }  
 }

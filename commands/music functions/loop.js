@@ -28,6 +28,8 @@ module.exports = {
                 reverseArr.reverse();
 
                 reverseArr.forEach(song => server.songArray.push(song));
+
+                server.previousSongs = [];
             }
 
             server.loop = true;
