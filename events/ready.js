@@ -8,7 +8,7 @@ module.exports = {
     name: 'ready',
     once: true,
     execute (bot, commands) {
-        if (!process.env.devMode) {
+        if (process.env.devMode == 'false') {
             token = process.env.token;
         } else {
             token = process.env.devToken;
@@ -20,7 +20,7 @@ module.exports = {
 
         (async () => {
             try {
-                if (!process.env.devMode) {
+                if (process.env.devMode == 'false') {
                     await rest.put(Routes.applicationCommands(process.env.clientId), {
                         body: commands
                     });
@@ -40,6 +40,6 @@ module.exports = {
             }
         })();
 
-        console.log((!process.env.devMode ? 'Tilly Online and ready to go!' : 'Dev Mode online and ready to test!'));
+        console.log((process.env.devMode == 'false' ? 'Tilly Online and ready to go!' : 'Dev Mode online and ready to test!'));
     }
 }
