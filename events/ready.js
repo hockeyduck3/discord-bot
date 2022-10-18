@@ -2,12 +2,18 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 require('dotenv').config();
 
-const token = (!process.env.devMode ? process.env.token : process.env.devToken);
+let token;
 
 module.exports = {
     name: 'ready',
     once: true,
     execute (bot, commands) {
+        if (!process.env.devMode) {
+            token = process.env.token;
+        } else {
+            token = process.env.devToken;
+        }
+
         const rest = new REST({
             version: '10'
         }).setToken(token);
