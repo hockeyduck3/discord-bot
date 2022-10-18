@@ -66,7 +66,10 @@ module.exports = {
                 name: 'Tilly Music Player: Song Queue',
                 iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
             },
-            fields: []
+            fields: [],
+            footer: {
+                text: (server.loop ? 'Queue Looping: ON' : 'Queue Looping: OFF')
+            }
         };
 
         queueArr.forEach(e => {

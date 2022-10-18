@@ -4,6 +4,7 @@ const dadHelp = require('../help functions/dadHelp');
 const flipHelp = require('../help functions/coinHelp');
 const musicHelp = require('../help functions/musicHelp');
 const calcHelp = require('../help functions/calcHelp');
+const conversionHelp = require('../help functions/conversionHelp');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +17,8 @@ module.exports = {
                     { name: 'music', value: 'music' },
 				    { name: 'calc', value: 'calc' },
 				    { name: 'dad', value: 'dad' },
-                    { name: 'flip', value: 'flip' }
+                    { name: 'flip', value: 'flip' },
+                    { name: 'conversion', value: 'conversion' }
                 )
         ),
 
@@ -34,25 +36,26 @@ module.exports = {
 
                 if (funcAnswer == 'flip') return flipHelp(interaction);
 
+                if (funcAnswer == 'conversion') return conversionHelp(interaction)
+
             } else {
                 const helpMessage = new EmbedBuilder()
-                .setColor([255, 0, 5])
-                .setAuthor({
-                    name: 'Tilly Help Center'
-                })
-                .setTitle('Different Commands')
-                .setDescription('Below are different functions that I have in my kit! For help with a specfic function type in "/help (function name)"')
-                .addFields(
-                    { name:'\u200B', value: '\u200B' },
-                    { name: 'Dad Jokes', value: 'Type "/help dad" for info on my wonderfully dumb Dad Jokes! 🤣', inline: true},
-                    { name: 'Flip a coin', value: 'Type "/help flip" for info on my master coin flipping! 🪙', inline: true},
-                    { name: 'Calculator', value: 'Type "/help calc" for info on my built in calculator! 🧮', inline: true},
-                    { name:'\u200B', value: '\u200B' },
-                    { name: 'Music', value: 'Type "/help music" for more info on how I can be your server\'s personal DJ! 🎧', inline: true},
-                    { name: 'Conversion', value: 'Type /conversion for more info on my supercalifragilisticexpialidocious conversion skills! 📏', inline: true },
-                    { name: 'Google it', value: 'Coming soon', inline: true }
-
-                )
+                    .setColor([255, 0, 5])
+                    .setAuthor({
+                        name: 'Tilly Help Center'
+                    })
+                    .setTitle('Different Commands')
+                    .setDescription('Below are different functions that I have in my kit! For help with a specfic function type in "/help (function name)"')
+                    .addFields(
+                        { name:'\u200B', value: '\u200B' },
+                        { name: 'Dad Jokes', value: 'Type "/help dad" for info on my wonderfully dumb Dad Jokes! 🤣', inline: true},
+                        { name: 'Flip a coin', value: 'Type "/help flip" for info on my master coin flipping! 🪙', inline: true},
+                        { name: 'Calculator', value: 'Type "/help calc" for info on my built in calculator! 🧮', inline: true},
+                        { name:'\u200B', value: '\u200B' },
+                        { name: 'Music', value: 'Type "/help music" for more info on how I can be your server\'s personal DJ! 🎧', inline: true},
+                        { name: 'Conversion', value: 'Type /conversion for more info on my supercalifragilisticexpialidocious conversion skills! 📏', inline: true },
+                        { name: 'Google it', value: 'Coming soon', inline: true }
+                    )
 
             interaction.reply({
                 embeds: [helpMessage],

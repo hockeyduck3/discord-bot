@@ -3,6 +3,7 @@ const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
+const playlist = require('youtube-sr').default;
 
 const serverMap = new Map();
 
@@ -19,7 +20,6 @@ module.exports = {
                     .setDescription('Give me a song name or a Youtube link to play')
                     .setRequired(true)    
             ),
-        
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
@@ -44,9 +44,17 @@ module.exports = {
 
         let queue = serverMap.get(interaction.guild.id);
 
-        let checkArg = ytdl.validateURL(song);
+        let checkArg;
+
+        if (song.includes('playlist?')) {
+            checkArg = 'playlist';
+        } else {
+            checkArg = ytdl.validateURL(song);
+        }
 
         let video;
+        let playlistArr = [];
+        let reply = false;
 
         const findVideo = async (query) => {
             const result = await youtube.search(query);
@@ -62,7 +70,7 @@ module.exports = {
             server.songArray.shift();
 
             if (!song) {
-                server.voice.leave();
+                server.connection.destroy();
                 serverMap.delete(guildId);
                 return;
             } else {
@@ -91,24 +99,22 @@ module.exports = {
                 server.resource.playStream
                     .on('end', async () => {
                         if (server.songArray.length == 0) {
-                            try {
-                                await nowPlayingText.delete();
-                            } catch (err) {
-                                console.log(err);
-                            }
+                            deleteNowPlaying(server);
 
                             server.audioStatus = 'stopped';
 
                             leaveTimer(server, guildId);
                         } else {
-                            try {
-                                nowPlayingText.delete();
-                            } catch (err) {
-                                console.log(err);
-                            }
-                            
+                            deleteNowPlaying(server);
+
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
+
+                            if (server.loop) {
+                                server.songArray.push(server.prevSong);
+                                server.previousSongs.pop();
+                            }
+
                             playSong(guildId, server.songArray[0]);
 
                             if (server.prevCalled) {
@@ -128,12 +134,37 @@ module.exports = {
                     .setDescription(`Now playing [${song.title}](${song.link})   ${nowPlayingEmoji[Math.floor(Math.random() * nowPlayingEmoji.length)]}`)
                     .setThumbnail(song.thumbnail)
 
-            let nowPlayingText = await server.text.send({
+            server.nowPlaying = await server.text.send({
                 embeds: [nowPlaying]
             });
         }
 
-        if (checkArg) {
+        if (checkArg == 'playlist') {
+            await playlist.getPlaylist(song, {fetchAll: true})
+            .then(vid => {
+                if (vid != null) {
+                    for (let i = 0; i < vid.videos.length; i++) {
+                        video = {
+                            title: vid.videos[i].title,
+                            thumbnail: vid.videos[i].thumbnail.url,
+                            link: `https://www.youtube.com/watch?v=${vid.videos[i].id}`
+                        }
+    
+                        playlistArr.push(video);
+                    }
+                } else {
+                    interaction.reply({
+                        content: 'Looks like that playlist is set to private. Please make sure it\'s either public or unlisted',
+                        ephemeral: true
+                    });  
+                    reply = true;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
+
+        } else if (checkArg) {
             let info = await ytdl.getBasicInfo(song);
 
             video = {
@@ -159,15 +190,22 @@ module.exports = {
                 resource: null,
                 text: interaction.channel,
                 currentSong: null,
+                nowPlaying: null,
                 songArray: [],
                 previousSongs: [],
                 prevSong: null,
-                prevCalled: false
+                prevCalled: false,
+                loop: false
             };
 
             serverMap.set(interaction.guild.id, songObj);
-            songObj.songArray.push(video);
+            if (checkArg != 'playlist') {
+                songObj.songArray.push(video);
+            } else {
+                playlistArr.forEach(vid => songObj.songArray.push(vid));
+            }
 
+            playlistArr = [];
             await interaction.deferReply();
             await interaction.deleteReply();
 
@@ -194,27 +232,54 @@ module.exports = {
             await interaction.deleteReply();
 
         } else {
-            queue.songArray.push(video);
+            if (checkArg != 'playlist') {
+                queue.songArray.push(video);
 
-            const queueEmbed = new EmbedBuilder()
-                .setColor([2, 150, 255])
-                .setAuthor({
-                    name: 'Tilly Music Player',
-                    iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
-                })
-                .setDescription(`Title [${video.title}](${video.link}) has been added to the queue    ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
-                .setThumbnail(video.thumbnail)
+                const queueEmbed = new EmbedBuilder()
+                    .setColor([2, 150, 255])
+                    .setAuthor({
+                        name: 'Tilly Music Player',
+                        iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
+                    })
+                    .setDescription(`Title [${video.title}](${video.link}) has been added to the queue    ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
+                    .setThumbnail(video.thumbnail)
 
 
-            interaction.reply({
-                embeds: [queueEmbed]
-            });
-            return;
+                interaction.reply({
+                    embeds: [queueEmbed]
+                });
+
+                return;
+            } else {
+                if (!reply) {
+                    playlistArr.forEach(vid => queue.songArray.push(vid));
+
+                    const queueEmbed = new EmbedBuilder()
+                        .setColor([2, 150, 255])
+                        .setAuthor({
+                            name: 'Tilly Music Player',
+                            iconURL: 'https://i.pinimg.com/474x/80/3a/1f/803a1f2849f12dde465ab9143f50187e.jpg'
+                        })
+                        .setDescription(`${playlistArr.length} songs have been added to the queue ${queueEmoji[Math.floor(Math.random() * queueEmoji.length)]}`)
+
+                    playlistArr = [];
+
+                    interaction.reply({
+                        embeds: [queueEmbed]
+                    });
+                    return;
+                }
+            }
         }
 
         function leaveTimer(server, guildId) {
             setTimeout(() => {
-                if (server.audioStatus == 'stopped') {
+                if (!server) {
+                    return;
+                } 
+                
+                else if (server.audioStatus == 'stopped') {
+
                     const leaveEmbed = new EmbedBuilder()
                             .setColor([2, 12, 25])
                             .setAuthor({
@@ -229,10 +294,20 @@ module.exports = {
 
                     server.connection.destroy();
                     serverMap.delete(guildId);
+
                 } else {
                     return;
                 }
-            }, 60000);
+            }, 180000);
         }
+
+        const deleteNowPlaying = async (server) => {
+            try {
+                await server.nowPlaying.delete()
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
     }  
 }

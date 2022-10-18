@@ -20,7 +20,12 @@ module.exports = {
             content: 'Nothing\'s playing right meow',
             ephemeral: true
         });
-        
+
+        try {
+            await server.nowPlaying.delete()
+        } catch (err) {
+            console.log(err);
+        }
 
         server.connection.destroy();
 

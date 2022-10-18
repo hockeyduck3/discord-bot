@@ -21,7 +21,12 @@ module.exports = {
             ephemeral: true
         });
 
-        if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
+        if (server.loop) {
+            interaction.reply({
+                content: 'Sorry, can\'t use the previous function while the queue is looping',
+                ephemeral: true
+            });
+        } else if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
             server.songArray.unshift(server.currentSong)
             server.songArray.unshift(server.previousSongs[0]);
             server.previousSongs.shift();
@@ -33,7 +38,8 @@ module.exports = {
             server.resource.playStream.end();
         } else {
             interaction.reply({
-                content: 'You\'ve got no songs to go back to'
+                content: 'You\'ve got no songs to go back to',
+                ephemeral: true
             })
         }
     
