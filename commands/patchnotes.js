@@ -13,7 +13,7 @@ module.exports = {
             .setAuthor({
                 name: 'Tilly Patch Notes'
             })
-            .setTitle('10-?-22')
+            .setTitle('10-18-22')
             .addFields(
                 { name: 'Patch notes', value: 'Wanna know what features or bug fixes my amazing creator made for me? Well now you can read the latest patch notes! Which you are currently doing...'},
                 { name:'\u200B', value: '\u200B' },
