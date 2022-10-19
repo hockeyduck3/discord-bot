@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const { queue } = require('./play');
+const { serverMap } = require('../../external music functions/serverMap');
 
 let queueArr = [];
 let queueArrNum = 0;
@@ -31,7 +31,7 @@ module.exports = {
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
-        let server = queue.get(interaction.guild.id);
+        let server = serverMap.get(interaction.guild.id);
 
         let option = interaction.options.getBoolean('public');
 

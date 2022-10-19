@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const { queue } = require('./play');
+const { serverMap } = require('../../external music functions/serverMap');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +9,7 @@ module.exports = {
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
-        let server = queue.get(interaction.guild.id);
+        let server = serverMap.get(interaction.guild.id);
 
         if (!vc) return interaction.reply({
             content: 'You gotta be in a voice channel',
