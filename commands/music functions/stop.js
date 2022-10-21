@@ -22,7 +22,7 @@ module.exports = {
         });
 
         try {
-            await server.nowPlaying.delete()
+            await server.nowPlaying.delete();
         } catch (err) {
             console.log(err);
         }
@@ -31,6 +31,6 @@ module.exports = {
 
         interaction.reply('Alright alright I\'m stopping the music');
 
-        queue.delete(interaction.guild.id);
+        serverMap.delete(interaction.guild.id);
     }
 }
