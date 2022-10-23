@@ -1,28 +1,58 @@
 const { serverMap } = require('../external music functions/serverMap');
+
+const channelMap = new Map();
+
 module.exports = {
     name: 'voiceStateUpdate',
     once: false,
     async execute(oldState, newState) {
+        const guildId = oldState.guild.id;
+        const server = serverMap.get(guildId);
+
         if (oldState.channel != null) {
             if (oldState.channel.members.size - 1 == 0) {
-                const guildId = oldState.guild.id;
-
-                const server = serverMap.get(guildId);
-                
                 if (server) {
-                    server.connection.destroy();
+                    const channelObj = {
+                        channelEmpty: true
+                    }
 
-                    await server.nowPlaying.delete();
+                    channelMap.set(guildId, channelObj);
 
-                    server.text.send('You guys left me to play music for no one. RUDE!');
-
-                    serverMap.delete(guildId);
+                    leaveChannel(guildId);
                 }
             }
         }
         
         if (newState.channel != null) {
-            console.log(`newState size: ${newState.channel.members.size}`);
+            if (newState.channel.members.size != 0) {
+                const channel = channelMap.get(guildId);
+
+                if (server && channel) {
+                    channel.channelEmpty = false;
+                }
+            }
         }
     }
+}
+
+
+function leaveChannel(guildId) {
+    setTimeout(async () => {
+        const server = serverMap.get(guildId);
+
+        const channel = channelMap.get(guildId);
+
+        if (server && channel.channelEmpty) {
+            server.connection.destroy();
+
+            await server.nowPlaying.delete();
+
+            serverMap.delete(guildId);
+        } 
+        
+        else {
+            return;
+        }
+
+    }, 30000);
 }
