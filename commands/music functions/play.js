@@ -13,10 +13,10 @@ const queueEmoji = ['👍', '🤖', '👊', '👏', '🫶', '👌', '💪', '�
 module.exports = {
     data: new SlashCommandBuilder()
             .setName('play')
-            .setDescription('play a song')
+            .setDescription('Play a song from Youtube or Youtube Playlist')
             .addStringOption(song => 
-                song.setName('song')
-                    .setDescription('Give me a song name or a Youtube link to play')
+                song.setName('input')
+                    .setDescription('Give me a song name or a Youtube link or a Youtube Playlist')
                     .setRequired(true)    
             ),
 
