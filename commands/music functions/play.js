@@ -22,7 +22,7 @@ module.exports = {
 
     async execute(interaction) {
         const vc = interaction.member.voice.channel;
-        const song = interaction.options.getString('song');
+        const song = interaction.options.getString('input');
 
         if (!vc) return interaction.reply({
             content: 'You gotta be in a voice channel',
