@@ -47,17 +47,25 @@ module.exports = {
             if (i.customId == '1') {
                 server.songArray = [];
 
-                await i.deferUpdate();
-
                 await interaction.editReply({
-                    content: 'As you wish', 
+                    content: 'Removing all songs from the queue', 
                     components: [],
                     ephemeral: true
                 });
 
                 interaction.followUp({
-                    content: 'All songs have been removed from the queue'
-                })
+                  content: `${interaction.user.username} has requested that all the songs in the queue be removed.`,
+                  components: [],
+                  ephemeral: false  
+                });
+
+            } else {
+
+                await interaction.editReply({
+                    content: 'Alright I won\'t remove anything from the queue',
+                    components: [],
+                    ephemeral: true
+                });
             }
         })
 
@@ -86,6 +94,8 @@ module.exports = {
             });
             
         } else {
+
+            let option = interaction.options.getInteger('number');
 
             if (server.songArray[option - 1] == undefined) return interaction.reply({
                 content: 'It doesn\'t look like that song exists in the queue. Please try a different song number.',
