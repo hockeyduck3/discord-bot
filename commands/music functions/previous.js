@@ -20,13 +20,8 @@ module.exports = {
             content: 'Nothing\'s playing right meow',
             ephemeral: true
         });
-
-        if (server.loop) {
-            interaction.reply({
-                content: 'Sorry, can\'t use the previous function while the queue is looping',
-                ephemeral: true
-            });
-        } else if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
+        
+        if (server.previousSongs[0] != server.currentSong && server.previousSongs.length != 0) {
             server.songArray.unshift(server.currentSong)
             server.songArray.unshift(server.previousSongs[0]);
             server.previousSongs.shift();

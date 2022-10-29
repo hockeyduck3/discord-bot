@@ -48,19 +48,20 @@ module.exports = async function playSong(guildId, song) {
                         if (server.songArray.length == 0 && server.loop == false) {
                             deleteNowPlaying(server);
 
+                            server.prevSong = server.currentSong;
+                            server.previousSongs.unshift(server.prevSong);
                             server.audioStatus = 'stopped';
 
                             leaveTimer(server, guildId);
                         } else if (server.songArray.length == 0 && server.loop == true) {
                             deleteNowPlaying(server);
-
                             server.prevSong = server.currentSong;
-                            server.loopArray.push(server.currentSong);
                             server.previousSongs.unshift(server.prevSong);
+                            server.songArray = [];
+                            const reversedArr = server.previousSongs.reverse();
 
-                            server.songArray = [...server.loopArray];
-
-                            server.loopArray = [];
+                            server.songArray = [...reversedArr];
+                            server.previousSongs = [];
 
                             playSong(guildId, server.songArray[0]);
 
@@ -68,7 +69,6 @@ module.exports = async function playSong(guildId, song) {
                             deleteNowPlaying(server);
                             
                             server.prevSong = server.currentSong;
-                            server.loopArray.push(server.currentSong);
                             server.previousSongs.unshift(server.prevSong);
 
                             playSong(guildId, server.songArray[0]);

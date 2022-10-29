@@ -115,7 +115,6 @@ module.exports = {
                 nowPlaying: null,
                 songArray: [],
                 previousSongs: [],
-                loopArray: [],
                 prevSong: null,
                 prevCalled: false,
                 loop: false
