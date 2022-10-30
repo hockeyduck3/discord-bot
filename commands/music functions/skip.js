@@ -23,7 +23,7 @@ module.exports = {
 
         const currentSong = server.currentSong.title;
 
-        if (server.songArray.length == 0) {
+        if (server.songArray.length == 0 && server.loop == false) {
             interaction.reply({
                 content: 'There are no other songs to skip',
                 ephemeral: true

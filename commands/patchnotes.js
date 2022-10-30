@@ -11,12 +11,14 @@ module.exports = {
         const patchMessage = new EmbedBuilder()
             .setColor([255, 0, 5])
             .setAuthor({
-                name: 'Tilly Patch Notes 10-23-22'
+                name: 'Tilly Patch Notes 10-30-22'
             })
             .addFields(
-                { name: 'Leaving VC when no one is there', value: 'So my creator has now given me permission to leave the voice channel when I\'m playing music and no one is in the voice channel to listen. Honestly it just feels rude that you guys would tell me to play music but no one would stay to hear it 😢'},
+                { name: 'Fixes for the music loop', value: 'You guys might be wondering, what was wrong with the looping function? Well, my creator noticed that it wasn\'t quite working right. Like if you added a song to the queue, but it would play an old song before getting to the new one. But that\'s been fixed now! 😁👍'},
                 { name:'\u200B', value: '\u200B' },
-                { name: 'Small changes', value: 'Oh also my creator made some small tweaks to the text with my play function.' }
+                { name: 'Remove all', value: 'So let me guess. One of your buddies put on a playlist with 658 songs on it. But going in and removing those songs one by one is not really ideal. So now you can just ask me to "/remove all" and I\'ll get rid of EVERYTHING.' },
+                { name:'\u200B', value: '\u200B' },
+                { name:'Play next', value: 'Did you want to show your mates this cool new song that you found but don\'t want to suffer through 23 other songs to get to your song? Well now you can tell me "/playnext" and I\'ll move that song to the front of the queue! You can consider it a bribe.' },
             )
 
         interaction.reply({

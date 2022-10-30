@@ -45,22 +45,31 @@ module.exports = async function playSong(guildId, song) {
 
                 server.resource.playStream
                     .on('end', async () => {
-                        if (server.songArray.length == 0) {
-                            deleteNowPlaying(server);
-
-                            server.audioStatus = 'stopped';
-
-                            leaveTimer(server, guildId);
-                        } else {
+                        if (server.songArray.length == 0 && server.loop == false) {
                             deleteNowPlaying(server);
 
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
+                            server.audioStatus = 'stopped';
 
-                            if (server.loop) {
-                                server.songArray.push(server.prevSong);
-                                server.previousSongs.pop();
-                            }
+                            leaveTimer(server, guildId);
+                        } else if (server.songArray.length == 0 && server.loop == true) {
+                            deleteNowPlaying(server);
+                            server.prevSong = server.currentSong;
+                            server.previousSongs.unshift(server.prevSong);
+                            server.songArray = [];
+                            const reversedArr = server.previousSongs.reverse();
+
+                            server.songArray = [...reversedArr];
+                            server.previousSongs = [];
+
+                            playSong(guildId, server.songArray[0]);
+
+                        } else {
+                            deleteNowPlaying(server);
+                            
+                            server.prevSong = server.currentSong;
+                            server.previousSongs.unshift(server.prevSong);
 
                             playSong(guildId, server.songArray[0]);
 
