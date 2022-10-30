@@ -32,6 +32,8 @@ module.exports = {
             
             server.resource.playStream.end();
         } else {
+            server.previousSongs = [];
+            
             interaction.reply({
                 content: 'You\'ve got no songs to go back to',
                 ephemeral: true
