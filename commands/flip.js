@@ -25,8 +25,6 @@ module.exports = {
 
         let result;
 
-        console.log(num);
-
         if (num % 2 === 1) {
             result = 'heads';
         } else {
