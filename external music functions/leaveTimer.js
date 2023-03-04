@@ -28,5 +28,5 @@ module.exports = function leaveTimer(server, guildId) {
         } else {
             return;
         }
-    }, 1000);
+    }, 180000);
 }
