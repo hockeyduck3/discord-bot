@@ -35,6 +35,7 @@ module.exports = async function playSong(guildId, song) {
                 server.audioPlayer.play(server.resource);
                 server.audioStatus = 'playing';
 
+                //Fix provided by https://github.com/TannerGabriel/discord-bot/issues/212
                 server.connection.on('stateChange', (oldState, newState) => {
                     const oldNetworking = Reflect.get(oldState, 'networking');
                     const newNetworking = Reflect.get(newState, 'networking');
