@@ -23,7 +23,7 @@ module.exports = {
                 } 
                 
                 else {
-                    await rest.put(Routes.applicationGuildCommands(process.env.clientId, process.env.guildId), {
+                    await rest.put(Routes.applicationGuildCommands(process.env.devClientId, process.env.guildId), {
                         body: commands
                     });
 

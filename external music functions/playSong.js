@@ -23,7 +23,7 @@ module.exports = async function playSong(guildId, song) {
             } else {
                 server.audioPlayer = createAudioPlayer();
 
-                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'lowestaudio', highWaterMark: 1<<25}).on('error', err => {
+                const stream = ytdl(song.link, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}).on('error', err => {
                     console.log(err);
                     server.text.send('There was an error with that stream');
                     server.connection.destroy();
@@ -34,6 +34,12 @@ module.exports = async function playSong(guildId, song) {
 
                 server.audioPlayer.play(server.resource);
                 server.audioStatus = 'playing';
+
+                server.connection.on('stateChange', (old_state, new_state) => {
+                    if (old_state.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
+                        server.connection.configureNetworking();
+                    }
+                })
 
                 try {
                     await entersState(server.connection, VoiceConnectionStatus.Ready, 30_000);
