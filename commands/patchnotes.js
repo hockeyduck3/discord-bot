@@ -11,14 +11,14 @@ module.exports = {
         const patchMessage = new EmbedBuilder()
             .setColor([255, 0, 5])
             .setAuthor({
-                name: 'Tilly Patch Notes 10-30-22'
+                name: 'Tilly Patch Notes 4-23-23'
             })
             .addFields(
-                { name: 'Fixes for the music loop', value: 'You guys might be wondering, what was wrong with the looping function? Well, my creator noticed that it wasn\'t quite working right. Like if you added a song to the queue, but it would play an old song before getting to the new one. But that\'s been fixed now! 😁👍'},
+                { name: 'BUGS SQUASHED', value: 'HEY GUYS! Been awhile since my last update. I know I\'ve been a little grumpy lately and haven\'t wanted to DJ a lot for y\'all, but I got some therapy with my creator and we worked through some bugs so I\'m feeling a lot better now and ready to DJ for you guys ALL NIGHT LONG! 😎'},
                 { name:'\u200B', value: '\u200B' },
-                { name: 'Remove all', value: 'So let me guess. One of your buddies put on a playlist with 658 songs on it. But going in and removing those songs one by one is not really ideal. So now you can just ask me to "/remove all" and I\'ll get rid of EVERYTHING.' },
+                { name: 'Leave timer', value: 'Well... I say I\'m ready to party all night long, but as soon as you guys leave I\'m packing my bags and going home! 😤 But if you guys invite me to the party I won\'t try to leave every minute and 30 seconds like I used to. I\'ll just stay with you guys till the last person leaves 😁' },
                 { name:'\u200B', value: '\u200B' },
-                { name:'Play next', value: 'Did you want to show your mates this cool new song that you found but don\'t want to suffer through 23 other songs to get to your song? Well now you can tell me "/playnext" and I\'ll move that song to the front of the queue! You can consider it a bribe.' },
+                { name:'Future updates', value: 'While this update was mostly fixing stuff, I\'ve had a chat with my creator and he agrees that it\'s time for me to learn some new tricks. So stay tuned for that!' },
             )
 
         interaction.reply({

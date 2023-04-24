@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const { createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 
-const leaveTimer = require('./leaveTimer');
 const deleteNowPlaying = require('./deleteNowPlaying');
 
 const nowPlayingEmoji = ['🎧', '🎶', '🎵', '🎸', '🎷', '🎺', '🔊', '🎤'];
@@ -35,20 +34,6 @@ module.exports = async function playSong(guildId, song) {
                 server.audioPlayer.play(server.resource);
                 server.audioStatus = 'playing';
 
-                //Fix provided by https://github.com/TannerGabriel/discord-bot/issues/212
-                server.connection.on('stateChange', (oldState, newState) => {
-                    const oldNetworking = Reflect.get(oldState, 'networking');
-                    const newNetworking = Reflect.get(newState, 'networking');
-
-                    const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
-                        const newUdp = Reflect.get(newNetworkState, 'udp');
-                        clearInterval(newUdp?.keepAliveInterval);
-                      }
-                
-                      oldNetworking?.off('stateChange', networkStateChangeHandler);
-                      newNetworking?.on('stateChange', networkStateChangeHandler);
-                });
-
                 try {
                     await entersState(server.connection, VoiceConnectionStatus.Ready, 30_000);
                     server.connection.subscribe(server.audioPlayer);
@@ -66,7 +51,6 @@ module.exports = async function playSong(guildId, song) {
                             server.previousSongs.unshift(server.prevSong);
                             server.audioStatus = 'stopped';
 
-                            leaveTimer(server, guildId);
                         } else if (server.songArray.length == 0 && server.loop == true) {
                             deleteNowPlaying(server);
                             server.prevSong = server.currentSong;

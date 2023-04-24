@@ -1,6 +1,7 @@
 const { serverMap } = require('../external music functions/serverMap');
 
 const channelMap = new Map();
+const deleteNowPlaying = require('../external music functions/deleteNowPlaying');
 
 module.exports = {
     name: 'voiceStateUpdate',
@@ -43,9 +44,9 @@ function leaveChannel(guildId) {
         const channel = channelMap.get(guildId);
 
         if (server && channel.channelEmpty) {
-            server.connection.destroy();
+            deleteNowPlaying(server);
 
-            await server.nowPlaying.delete();
+            server.connection.destroy();
 
             serverMap.delete(guildId);
         } 
