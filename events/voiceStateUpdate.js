@@ -43,9 +43,9 @@ function leaveChannel(guildId) {
         const channel = channelMap.get(guildId);
 
         if (server && channel.channelEmpty) {
-            server.connection.destroy();
+            deleteNowPlaying(server);
 
-            await server.nowPlaying.delete();
+            server.connection.destroy();
 
             serverMap.delete(guildId);
         } 
