@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const { createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 const ytdl = require('ytdl-core');
 
-const leaveTimer = require('./leaveTimer');
 const deleteNowPlaying = require('./deleteNowPlaying');
 
 const nowPlayingEmoji = ['🎧', '🎶', '🎵', '🎸', '🎷', '🎺', '🔊', '🎤'];
@@ -35,12 +34,6 @@ module.exports = async function playSong(guildId, song) {
                 server.audioPlayer.play(server.resource);
                 server.audioStatus = 'playing';
 
-                server.connection.on('stateChange', (old_state, new_state) => {
-                    if (old_state.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
-                        server.connection.configureNetworking();
-                    }
-                })
-
                 try {
                     await entersState(server.connection, VoiceConnectionStatus.Ready, 30_000);
                     server.connection.subscribe(server.audioPlayer);
@@ -58,7 +51,6 @@ module.exports = async function playSong(guildId, song) {
                             server.previousSongs.unshift(server.prevSong);
                             server.audioStatus = 'stopped';
 
-                            leaveTimer(server, guildId);
                         } else if (server.songArray.length == 0 && server.loop == true) {
                             deleteNowPlaying(server);
                             server.prevSong = server.currentSong;
