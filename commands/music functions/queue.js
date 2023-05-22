@@ -2,17 +2,19 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const { serverMap } = require('../../external music functions/serverMap');
 
+const { durationCalc, convertMilli } = require('../../external music functions/timeCalc');
+
 let queueArr = [];
 let queueArrNum = 0;
 
 function makeQueue(server) {
     if(server.currentSong != null) {
-        queueArr.push({name: '\u200B', value: `Current Song: [${server.currentSong.title}](${server.currentSong.link})`})
+        queueArr.push({name: '\u200B', value: `Current Song: [${server.currentSong.title}](${server.currentSong.link}) (${durationCalc(server.currentSong.duration)})`});
     }
 
     for (let i = 0; i < server.songArray.length; i++) {
         if (i != 10) {
-            queueArr.push({name: '\u200B', value: `${i+1}) [${server.songArray[i].title}](${server.songArray[i].link})`});
+            queueArr.push({name: '\u200B', value: `${i+1}) [${server.songArray[i].title}](${server.songArray[i].link}) (${durationCalc(server.songArray[i].duration)})`});
         } else {
             queueArrNum = server.songArray.length - 10;
             break;
@@ -57,7 +59,7 @@ module.exports = {
         if (server.songArray.length != 0) {
             makeQueue(server);
         } else {
-            queueArr.push({name: '\u200B', value: `Current Song: [${server.currentSong.title}](${server.currentSong.link})`})
+            queueArr.push({name: '\u200B', value: `Current Song: [${server.currentSong.title}](${server.currentSong.link}) (${durationCalc(server.currentSong.duration)})`})
         }
 
         const embedMessage = {
@@ -68,7 +70,7 @@ module.exports = {
             },
             fields: [],
             footer: {
-                text: (server.loop ? 'Queue Looping: ON' : 'Queue Looping: OFF')
+                text: `${(server.loop ? 'Queue Looping: ON' : 'Queue Looping: OFF')} \n\nTime left in current song: (${durationCalc(server.currentSong.duration - convertMilli(server.audioPlayer._state.playbackDuration))})` 
             }
         };
 

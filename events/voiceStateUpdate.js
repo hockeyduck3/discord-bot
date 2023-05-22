@@ -1,4 +1,5 @@
 const { serverMap } = require('../external music functions/serverMap');
+const deleteNowPlaying = require('../external music functions/deleteNowPlaying');
 
 const channelMap = new Map();
 
