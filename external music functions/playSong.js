@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
+const { createAudioPlayer, createAudioResource, StreamType, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
 const ytdl = require('ytdl-core');
 
 const deleteNowPlaying = require('./deleteNowPlaying');

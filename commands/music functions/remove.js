@@ -35,6 +35,10 @@ module.exports = {
             .addSubcommand(all =>
                 all.setName('all')
                     .setDescription('Remove all the songs from the queue, aka no more music lined up 😢')
+            )
+            .addSubcommand(last => 
+                last.setName('last')
+                    .setDescription('Remove the last song from the queue')
             ),
             
 
@@ -93,6 +97,15 @@ module.exports = {
                 ephemeral: true
             });
             
+        } else if (command == 'last') {
+            let songName = server.songArray[server.songArray.length - 1].title;
+    
+            server.songArray.pop();
+    
+            interaction.reply(`${songName} has been removed from the queue  ${removeEmoji[Math.floor(Math.random() * removeEmoji.length)]}`);
+    
+            return;
+
         } else {
 
             let option = interaction.options.getInteger('number');

@@ -5,6 +5,8 @@ const ytdl = require('ytdl-core');
 const { youtube } = require('scrape-youtube');
 const playlist = require('youtube-sr').default;
 
+const { convertMilli } = require('../../external music functions/timeCalc');
+
 const { serverMap } = require('../../external music functions/serverMap');
 const playSong = require('../../external music functions/playSong');
 
@@ -16,8 +18,7 @@ module.exports = {
             .setDescription('Play a song from Youtube or Youtube Playlist')
             .addStringOption(song => 
                 song.setName('input')
-                    .setDescription('Give me a song name or a Youtube link or a Youtube Playlist')
-                    .setRequired(true)    
+                    .setDescription('Give me a song name or a Youtube link or a Youtube Playlist')   
             ),
 
     async execute(interaction) {
@@ -41,25 +42,58 @@ module.exports = {
             ephemeral: true
         });
 
-        let queue = serverMap.get(interaction.guild.id);
+        if (song == null) {
+            let server = serverMap.get(interaction.guild.id);
 
-        let checkArg;
+            if (server) {
+                if (server.audioStatus == 'paused') {
+                    const currentSong = server.currentSong.title;
+                    server.audioStatus = 'playing';
+                    server.audioPlayer.unpause();
 
-        if (song.includes('playlist?')) {
-            checkArg = 'playlist';
+                    interaction.reply(`▶️ Resuming ${currentSong}`);
+                } else {
+                    interaction.reply(`Nothing is paused right meow`);
+                }
+            } else {
+                return interaction.reply(`Nothing is playing right meow`);
+            }
+
+        }
+
+    let queue = serverMap.get(interaction.guild.id);
+
+    let checkArg;
+
+    if (song.includes('playlist?')) {
+        checkArg = 'playlist';
+    } else {
+        checkArg = ytdl.validateURL(song);
+    }
+
+    let video;
+    let playlistArr = [];
+    let reply = false;
+
+    const findVideo = async (query) => {
+        const result = await youtube.search(query);
+
+        if (result.videos.length >= 1) {
+            if (result.videos[0].title.toLowerCase().includes('video')) {
+                const newResult = await youtube.search(`${query} audio`);
+
+                if (newResult.videos[0].title.toLowerCase().includes('video')) {
+                    return newResult.videos[1];
+                }
+
+                return newResult.videos[0];
+            } else {
+                return result.videos[0];
+            }
         } else {
-            checkArg = ytdl.validateURL(song);
+            return null
         }
-
-        let video;
-        let playlistArr = [];
-        let reply = false;
-
-        const findVideo = async (query) => {
-            const result = await youtube.search(query);
-
-            return (result.videos.length >= 1) ? result.videos[0] : null;
-        }
+    }
 
         if (checkArg == 'playlist') {
             await playlist.getPlaylist(song, {fetchAll: true})
@@ -69,7 +103,8 @@ module.exports = {
                         video = {
                             title: vid.videos[i].title,
                             thumbnail: vid.videos[i].thumbnail.url,
-                            link: `https://www.youtube.com/watch?v=${vid.videos[i].id}`
+                            link: `https://www.youtube.com/watch?v=${vid.videos[i].id}`,
+                            duration: convertMilli(vid.videos[i].duration)
                         }
     
                         playlistArr.push(video);
@@ -92,15 +127,17 @@ module.exports = {
             video = {
                 title: info.videoDetails.title,
                 thumbnail: info.videoDetails.thumbnails[0].url,
-                link: info.videoDetails.video_url
+                link: info.videoDetails.video_url,
+                duration: parseInt(info.videoDetails.lengthSeconds)
             }
         } else {
-            let foundVideo = await findVideo(`${song} audio`);
+            let foundVideo = await findVideo(song);
 
             video = {
                 title: foundVideo.title,
                 thumbnail: foundVideo.thumbnail,
-                link: foundVideo.link
+                link: foundVideo.link,
+                duration: foundVideo.duration
             }
         }
 
@@ -117,7 +154,7 @@ module.exports = {
                 previousSongs: [],
                 prevSong: null,
                 prevCalled: false,
-                loop: false
+                loop: false,
             };
 
             serverMap.set(interaction.guild.id, songObj);
@@ -128,14 +165,13 @@ module.exports = {
             }
 
             playlistArr = [];
-            await interaction.deferReply();
-            await interaction.deleteReply();
+            deferReply(interaction);
 
             try {
                 songObj.connection = await joinVoiceChannel({
                     channelId: vc.id,
-	                guildId: interaction.guild.id,
-	                adapterCreator: interaction.guild.voiceAdapterCreator
+                    guildId: interaction.guild.id,
+                    adapterCreator: interaction.guild.voiceAdapterCreator
                 })
 
                 playSong(interaction.guild.id, songObj.songArray[0]);
@@ -150,8 +186,7 @@ module.exports = {
 
             playSong(interaction.guild.id, queue.songArray[0]);
 
-            await interaction.deferReply();
-            await interaction.deleteReply();
+            deferReply(interaction);
 
         } else {
             if (checkArg != 'playlist') {
@@ -193,5 +228,10 @@ module.exports = {
                 }
             }
         }
-    }  
+    }
+}  
+
+async function deferReply(interaction) {
+    await interaction.deferReply();
+    await interaction.deleteReply();
 }
