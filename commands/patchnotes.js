@@ -14,17 +14,11 @@ module.exports = {
                 name: 'Tilly Patch Notes 5-21-23'
             })
             .addFields(
-                { name: 'BUGS SQUASHED', value: 'Soooo good news and bad news... So my last update did killed some bugs, but not ALL of the bugs were killed. This time around more bugs should\'ve been squatched! So hopefully no more issues for the time being 😣'},
+                { name: 'Fixes for the music loop', value: 'You guys might be wondering, what was wrong with the looping function? Well, my creator noticed that it wasn\'t quite working right. Like if you added a song to the queue, but it would play an old song before getting to the new one. But that\'s been fixed now! 😁👍'},
                 { name:'\u200B', value: '\u200B' },
-                { name: '/stop is now /leave', value: 'This change is pretty simple. Instead of telling me to /stop just tell me to /leave and I may or may not leave the VC 😎' },
+                { name: 'Remove all', value: 'So let me guess. One of your buddies put on a playlist with 658 songs on it. But going in and removing those songs one by one is not really ideal. So now you can just ask me to "/remove all" and I\'ll get rid of EVERYTHING.' },
                 { name:'\u200B', value: '\u200B' },
-                { name:'Times in queue', value: 'Something that I know some of you wanted to know was how much time was left on the current song. Well now if you hit /queue I will show you the time for each song and the time until the current song ends! Sooner or later I\;ll be able to tell you how much time is left until the current queue ends... Just not right now 😁' },
-                { name:'\u200B', value: '\u200B' },
-                { name: '/resume has been removed!', value: 'One major UI thing that happened in this update. You can no longer use the command /resume. Instead you just use /play to resume a song! Makes sense right? Pause, play. Yeah I think y\'all get it.'},
-                { name:'\u200B', value: '\u200B' },
-                { name: 'Better song selection', value: 'The final thing that got update was my song selecting. What do I mean by that? Well you know how sometimes you\'d ask me to play a song and I play the wrong song? Well while that won\'t be going away completely... My creator changed how I find music for you guys so I should be at least a little more accurate? Hopefully???'},
-                { name:'\u200B', value: '\u200B' },
-                { name: '/remove last', value: 'Speaking of better song selection. The final final thing that got added was the ability to now tell me "/remove last" JUST in case if I didn\'t get the song you wanted you now have an easier and faster way of letting me know!'},
+                { name:'Play next', value: 'Did you want to show your mates this cool new song that you found but don\'t want to suffer through 23 other songs to get to your song? Well now you can tell me "/playnext" and I\'ll move that song to the front of the queue! You can consider it a bribe.' },
             )
 
         interaction.reply({
