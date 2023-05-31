@@ -2,7 +2,6 @@ const { serverMap } = require('../external music functions/serverMap');
 const deleteNowPlaying = require('../external music functions/deleteNowPlaying');
 
 const channelMap = new Map();
-const deleteNowPlaying = require('../external music functions/deleteNowPlaying');
 
 module.exports = {
     name: 'voiceStateUpdate',

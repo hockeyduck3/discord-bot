@@ -56,9 +56,9 @@ module.exports = {
                     interaction.reply(`Nothing is paused right meow`);
                 }
             } else {
-                return interaction.reply(`Nothing is playing right meow`);
+                interaction.reply(`Nothing is playing right meow`);
             }
-
+            return;
         }
 
     let queue = serverMap.get(interaction.guild.id);
