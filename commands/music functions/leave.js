@@ -70,11 +70,13 @@ module.exports = {
             }, 1800);
             return;
         } 
-        
-        try {
-            await server.nowPlaying.delete();
-        } catch (err) {
-            console.log(err);
+
+        if (server.audioStatus != 'stopped') {
+            try {
+                await server.nowPlaying.delete();
+            } catch (err) {
+                console.log(err);
+            }
         }
 
         server.connection.destroy();
