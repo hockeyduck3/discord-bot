@@ -69,7 +69,12 @@ module.exports = async function playSong(guildId, song) {
                             server.prevSong = server.currentSong;
                             server.previousSongs.unshift(server.prevSong);
 
-                            playSong(guildId, server.songArray[0]);
+                            try {
+                                playSong(guildId, server.songArray[0]);
+                            } catch (error) {
+                                deleteNowPlaying(server);
+                                console.log(error)
+                            }
 
                             if (server.prevCalled) {
                                 server.previousSongs.shift();
